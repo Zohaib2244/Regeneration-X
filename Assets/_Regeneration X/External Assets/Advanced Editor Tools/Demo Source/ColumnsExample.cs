@@ -35,7 +35,8 @@ namespace AdvancedEditorTools
         // #################################
 
 
-        // You can also nest column sections, and define the proportion of the
+
+            // You can also nest column sections, and define the proportion of the
         // inspector window width they will occupy. Make sure that the addition
         // of the proportions you write do not surpass 1
         [BeginColumnArea(columnWidth: 0.5f)]
@@ -58,6 +59,5 @@ namespace AdvancedEditorTools
         // no other fields left in the script
         [EndColumnArea(includeLast = true)]
         public int test5;
-
     }
 }
