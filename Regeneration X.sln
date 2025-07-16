@@ -1,0 +1,56 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RayFireAssembly", "RayFireAssembly.csproj", "{50A2AE14-59BA-72E1-28F9-4F087C8644F4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{14DEDF8E-1E9D-853A-5249-79C6D3EDC436}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-Editor", "Assembly-CSharp-Editor.csproj", "{9C6CB837-8069-7C48-64DB-D4D583AA998F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.Physics.Custom", "Unity.Physics.Custom.csproj", "{D22E3397-79E0-3D2C-8D25-0DA74FA2A4E3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RayFireEditorAssembly", "RayFireEditorAssembly.csproj", "{B77CA1FC-3FF5-A475-50D0-057B09E3AF66}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unity.Physics.Custom.Editor", "Unity.Physics.Custom.Editor.csproj", "{E0205D98-CBB2-99C5-F64F-ADC32BDF5981}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FolderIcons", "FolderIcons.csproj", "{0693D710-8620-29BF-07C5-4ADD882F1004}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{50A2AE14-59BA-72E1-28F9-4F087C8644F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{50A2AE14-59BA-72E1-28F9-4F087C8644F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{50A2AE14-59BA-72E1-28F9-4F087C8644F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{50A2AE14-59BA-72E1-28F9-4F087C8644F4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14DEDF8E-1E9D-853A-5249-79C6D3EDC436}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14DEDF8E-1E9D-853A-5249-79C6D3EDC436}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14DEDF8E-1E9D-853A-5249-79C6D3EDC436}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14DEDF8E-1E9D-853A-5249-79C6D3EDC436}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C6CB837-8069-7C48-64DB-D4D583AA998F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C6CB837-8069-7C48-64DB-D4D583AA998F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C6CB837-8069-7C48-64DB-D4D583AA998F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C6CB837-8069-7C48-64DB-D4D583AA998F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D22E3397-79E0-3D2C-8D25-0DA74FA2A4E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D22E3397-79E0-3D2C-8D25-0DA74FA2A4E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D22E3397-79E0-3D2C-8D25-0DA74FA2A4E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D22E3397-79E0-3D2C-8D25-0DA74FA2A4E3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B77CA1FC-3FF5-A475-50D0-057B09E3AF66}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B77CA1FC-3FF5-A475-50D0-057B09E3AF66}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B77CA1FC-3FF5-A475-50D0-057B09E3AF66}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B77CA1FC-3FF5-A475-50D0-057B09E3AF66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E0205D98-CBB2-99C5-F64F-ADC32BDF5981}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0205D98-CBB2-99C5-F64F-ADC32BDF5981}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0205D98-CBB2-99C5-F64F-ADC32BDF5981}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0205D98-CBB2-99C5-F64F-ADC32BDF5981}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0693D710-8620-29BF-07C5-4ADD882F1004}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0693D710-8620-29BF-07C5-4ADD882F1004}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0693D710-8620-29BF-07C5-4ADD882F1004}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0693D710-8620-29BF-07C5-4ADD882F1004}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
