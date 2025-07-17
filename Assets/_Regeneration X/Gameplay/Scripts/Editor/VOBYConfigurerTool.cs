@@ -2,13 +2,13 @@ using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Physics.Authoring;
 
 public class VOBYConfigurerTool : EditorWindow
 {
     private GameObject vobyGameObject;
     private Transform referenceTransform;
     private int batchSize = 1;
-
     [MenuItem("NuttyTools/VOBY Configurer Tool")]
     public static void ShowWindow()
     {
@@ -30,35 +30,37 @@ public class VOBYConfigurerTool : EditorWindow
 
     private void ConfigureVOBs()
     {
-        if (vobyGameObject == null || referenceTransform == null || batchSize < 1)
+        if (vobyGameObject == null || referenceTransform == null)
         {
-            Debug.LogError("Please assign all fields and ensure batch size >= 1.");
+            Debug.LogError("Please assign all fields.");
             return;
         }
 
-        //*  Add VOBYAuthoring if not present
+        // Add VOBYAuthoring if not present
         var vobyAuthoring = vobyGameObject.GetComponent<VOBYAuthoring>();
         if (vobyAuthoring == null)
         {
             vobyAuthoring = Undo.AddComponent<VOBYAuthoring>(vobyGameObject);
-            vobyAuthoring.epicenter = referenceTransform.position; // Set epicenter to reference transform position
+            vobyAuthoring.epicenter = referenceTransform.position;
             Undo.RecordObject(vobyAuthoring, "Configure VOBYAuthoring");
         }
-        //* Get all child GameObjects (direct children)
+
+        // Get all child GameObjects (direct children)
         List<GameObject> vobChildren = new List<GameObject>();
         foreach (Transform child in vobyGameObject.transform)
         {
             vobChildren.Add(child.gameObject);
         }
 
-        //* Sort by distance from referenceTransform
-        vobChildren = vobChildren.OrderBy(go => Vector3.Distance(go.transform.position, referenceTransform.position)).ToList();
+        // Sort by world position distance from referenceTransform
+        vobChildren = vobChildren
+            .OrderBy(go => Vector3.Distance(go.transform.position, referenceTransform.position))
+            .ToList();
 
+        // Assign unique index to each VOB (closest = 1, next = 2, ...)
         int currentIndex = 1;
-        int batchCounter = 0;
         foreach (var vob in vobChildren)
         {
-            //* Add VOBAuthoring if not present
             var authoring = vob.GetComponent<VOBAuthoring>();
             if (authoring == null)
             {
@@ -67,15 +69,40 @@ public class VOBYConfigurerTool : EditorWindow
             Undo.RecordObject(authoring, "Configure VOBAuthoring");
             authoring.VOBYParent = vobyGameObject;
             authoring.VOBIndex = currentIndex;
-
-            batchCounter++;
-            if (batchCounter >= batchSize)
+            // After assigning index
+            var renderer = vob.GetComponent<Renderer>();
+            if (renderer != null)
             {
-                batchCounter = 0;
-                currentIndex++;
+                // Assign a unique material instance
+                renderer.material = new Material(renderer.sharedMaterial);
+
+                float t = (float)(currentIndex - 1) / (vobChildren.Count - 1);
+                renderer.material.color = Color.Lerp(Color.red, Color.green, t); // Gradient color
             }
+            currentIndex++;
+
         }
 
-        Debug.Log($"Configured {vobChildren.Count} VOBs under {vobyGameObject.name}.");
+        Debug.Log($"Configured {vobChildren.Count} VOBs.");
+        // Set VOBYAuthoring batch size
+    }
+    public void ResetColor()
+    {
+        if (vobyGameObject == null)
+        {
+            Debug.LogError("Please assign the VOBY GameObject.");
+            return;
+        }
+
+        // Reset colors of all child VOBs
+        foreach (Transform child in vobyGameObject.transform)
+        {
+            var renderer = child.GetComponent<Renderer>();
+            if (renderer != null)
+            {
+                // Reset to the original material
+                renderer.material = renderer.sharedMaterial;
+            }
+        }
     }
 }
