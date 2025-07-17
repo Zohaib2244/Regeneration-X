@@ -1,56 +1,53 @@
+using Unity.Burst;
+using Unity.Collections;
 using Unity.Entities;
 using Unity.Transforms;
 using Unity.Mathematics;
-using Unity.Burst;
 
-[UpdateInGroup(typeof(SimulationSystemGroup))]
 [BurstCompile]
+[UpdateInGroup(typeof(SimulationSystemGroup))]
 public partial struct VOBReconstructionAnimationSystem : ISystem
 {
     [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
-        var deltaTime = SystemAPI.Time.DeltaTime;
-        var ecb = SystemAPI.GetSingleton<EndSimulationEntityCommandBufferSystem.Singleton>()
-            .CreateCommandBuffer(state.WorldUnmanaged);
+        var ecb = new EntityCommandBuffer(Allocator.TempJob);
 
-        foreach (var (transform, animation, entity) in SystemAPI
-            .Query<RefRW<LocalTransform>, RefRW<VOBReconstructionAnimation>>()
-            .WithEntityAccess())
+        float deltaTime = SystemAPI.Time.DeltaTime;
+
+        foreach (var (anim, entity) in SystemAPI.Query<RefRW<VOBReconstructionAnimation>>().WithEntityAccess())
         {
-            var animationRef = animation.ValueRW;
-            
-            // Update animation time
-            animationRef.AnimationTime += deltaTime;
-            
-            // Check if delay has passed
-            if (animationRef.AnimationTime < animationRef.DelayTime)
+            // Wait for delay before starting animation
+            if (anim.ValueRW.AnimationTime < anim.ValueRO.DelayTime)
+            {
+                anim.ValueRW.AnimationTime += deltaTime;
                 continue;
+            }
 
-            // Calculate progress (0 to 1)
-            float progress = (animationRef.AnimationTime - animationRef.DelayTime) / animationRef.AnimationDuration;
-            progress = math.clamp(progress, 0f, 1f);
-
-            // Smooth easing (ease-out)
-            float easedProgress = 1f - (1f - progress) * (1f - progress);
+            float t = math.saturate((anim.ValueRW.AnimationTime - anim.ValueRO.DelayTime) / anim.ValueRO.AnimationDuration);
 
             // Interpolate position and rotation
-            float3 currentPosition = math.lerp(animationRef.StartPosition, animationRef.TargetPosition, easedProgress);
-            quaternion currentRotation = math.slerp(animationRef.StartRotation, animationRef.TargetRotation, easedProgress);
+            float3 newPos = math.lerp(anim.ValueRO.StartPosition, anim.ValueRO.TargetPosition, t);
+            quaternion newRot = math.slerp(anim.ValueRO.StartRotation, anim.ValueRO.TargetRotation, t);
 
-            // Update transform
-            transform.ValueRW = new LocalTransform
+            // Apply to transform
+            if (SystemAPI.HasComponent<LocalTransform>(entity))
             {
-                Position = currentPosition,
-                Rotation = currentRotation,
-                Scale = transform.ValueRO.Scale
-            };
+                var localTransform = SystemAPI.GetComponentRW<LocalTransform>(entity);
+                localTransform.ValueRW.Position = newPos;
+                localTransform.ValueRW.Rotation = newRot;
+            }
 
-            // Remove animation component when complete
-            if (progress >= 1f)
+            anim.ValueRW.AnimationTime += deltaTime;
+
+            if (t >= 1f)
             {
+                // Remove animation component when done
                 ecb.RemoveComponent<VOBReconstructionAnimation>(entity);
             }
         }
+
+        ecb.Playback(state.EntityManager);
+        ecb.Dispose();
     }
 }

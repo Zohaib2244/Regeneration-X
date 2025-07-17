@@ -17,6 +17,10 @@ public partial struct VOBYReconstructionSystem : ISystem
         var ecb = SystemAPI.GetSingleton<BeginFixedStepSimulationEntityCommandBufferSystem.Singleton>()
             .CreateCommandBuffer(state.WorldUnmanaged);
 
+        // Variable to control how many VOBs animate at once.
+        // If 1, they animate one by one. If 10, they animate in batches of 10.
+        const int batchSize = 10; 
+
         // Only run if a request exists
         foreach (var (_, requestEntity) in SystemAPI.Query<VOBYReconstructionRequest>().WithEntityAccess())
         {
@@ -34,6 +38,10 @@ public partial struct VOBYReconstructionSystem : ISystem
                 // Reparent to original VOBY
                 ecb.AddComponent(entity, new Parent { Value = vob.ValueRO.VOBYParent });
 
+                // Calculate delay based on the batch size
+                int batchIndex = animationIndex / batchSize;
+                float delay = batchIndex * 0.05f; // 50ms delay between batches
+
                 // Add animation component instead of snapping
                 ecb.AddComponent(entity, new VOBReconstructionAnimation
                 {
@@ -42,7 +50,7 @@ public partial struct VOBYReconstructionSystem : ISystem
                     TargetPosition = vob.ValueRO.Position,
                     TargetRotation = vob.ValueRO.Rotation,
                     AnimationTime = 0f,
-                    DelayTime = animationIndex * 0.02f, // 20ms delay per VOB
+                    DelayTime = delay, // Use the calculated batch delay
                     AnimationDuration = 1.0f, // 1 second animation
                     AnimationIndex = animationIndex
                 });
