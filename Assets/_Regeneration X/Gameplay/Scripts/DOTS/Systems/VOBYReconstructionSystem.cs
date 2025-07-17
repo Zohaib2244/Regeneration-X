@@ -12,7 +12,7 @@ public partial struct VOBYReconstructionSystem : ISystem
         state.RequireForUpdate<VOBReconstructionProcess>();
     }
     
-        public void OnUpdate(ref SystemState state)
+    public void OnUpdate(ref SystemState state)
     {
         var ecb = SystemAPI.GetSingleton<BeginFixedStepSimulationEntityCommandBufferSystem.Singleton>()
             .CreateCommandBuffer(state.WorldUnmanaged);
@@ -33,7 +33,7 @@ public partial struct VOBYReconstructionSystem : ISystem
     
         // Gather all VOBs with required physics components - ADD LocalToWorld to query
         var vobQuery = SystemAPI.QueryBuilder()
-            .WithAll<VOBComponent, LocalTransform, LocalToWorld, PhysicsVelocity, PhysicsMass, PhysicsGravityFactor>()
+            .WithAll<VOBComponent, LocalTransform, LocalToWorld, VOBExplodedTag>()
             .Build();
     
         var vobEntities = vobQuery.ToEntityArray(Allocator.Temp);
@@ -45,6 +45,9 @@ public partial struct VOBYReconstructionSystem : ISystem
         var sortedIndices = Enumerable.Range(0, vobEntities.Length)
             .OrderBy(i => vobComponents[i].VOBIndex)
             .ToArray();
+        
+        // Keep track of which entities are being processed in this batch
+        var processedEntities = new NativeHashSet<Entity>(process.ValueRO.BatchSize, Allocator.Temp);
             
         for (int batchIdx = 0; batchIdx < sortedIndices.Length; batchIdx++)
         {
@@ -56,6 +59,9 @@ public partial struct VOBYReconstructionSystem : ISystem
             var vob = vobComponents[i];
             var transform = transforms[i];
             var localToWorld = localToWorlds[i];
+        
+            // Add to processed entities set
+            processedEntities.Add(entity);
         
             // Store current world position before reparenting
             float3 currentWorldPos = localToWorld.Position;
@@ -101,13 +107,33 @@ public partial struct VOBYReconstructionSystem : ISystem
                 TargetRotation = vob.Rotation,       // Target world rotation
                 AnimationTime = 0f,
                 DelayTime = 0f,
-                AnimationDuration = 0.25f,
+                AnimationDuration = process.ValueRO.AnimationDuration, // Use the duration from the process
                 AnimationIndex = startIndex + animatedThisFrame
             });
+            ecb.RemoveComponent<VOBExplodedTag>(entity); // Remove exploded tag if exists
         
             animatedThisFrame++;
         }
         
+        // If FreezeUnbatchedVOBs is true, freeze all remaining VOBs
+        if (process.ValueRO.FreezeUnbatchedVOBs)
+        {
+            for (int i = 0; i < vobEntities.Length; i++)
+            {
+                var entity = vobEntities[i];
+                
+                // Skip entities that are already being processed in this batch
+                if (processedEntities.Contains(entity))
+                    continue;
+                
+                // Remove physics components to freeze the VOB
+                ecb.RemoveComponent<PhysicsVelocity>(entity);
+                ecb.RemoveComponent<PhysicsMass>(entity);
+                ecb.RemoveComponent<PhysicsGravityFactor>(entity);
+            }
+        }
+        
+        processedEntities.Dispose();
         vobEntities.Dispose();
         vobComponents.Dispose();
         transforms.Dispose();

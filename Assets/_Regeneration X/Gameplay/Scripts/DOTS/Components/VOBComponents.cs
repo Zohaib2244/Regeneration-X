@@ -1,7 +1,7 @@
 using Unity.Entities;
 using Unity.Mathematics;
 
-
+public struct VOBExplodedTag : IComponentData{}
 public struct VOBComponent : IComponentData
 {
     public Entity VOBYParent;

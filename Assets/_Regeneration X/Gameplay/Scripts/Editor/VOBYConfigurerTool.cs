@@ -41,7 +41,6 @@ public class VOBYConfigurerTool : EditorWindow
         if (vobyAuthoring == null)
         {
             vobyAuthoring = Undo.AddComponent<VOBYAuthoring>(vobyGameObject);
-            vobyAuthoring.epicenter = referenceTransform.position;
             Undo.RecordObject(vobyAuthoring, "Configure VOBYAuthoring");
         }
 

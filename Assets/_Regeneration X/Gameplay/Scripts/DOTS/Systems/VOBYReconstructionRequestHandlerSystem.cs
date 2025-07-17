@@ -1,3 +1,4 @@
+using Unity.Burst;
 using Unity.Entities;
 public partial struct VOBYReconstructionRequestHandlerSystem : ISystem
 {
@@ -5,13 +6,12 @@ public partial struct VOBYReconstructionRequestHandlerSystem : ISystem
     {
         state.RequireForUpdate(state.GetEntityQuery(ComponentType.ReadOnly<VOBYReconstructionRequest>()));
     }
-
+    [BurstCompile]
     public void OnUpdate(ref SystemState state)
     {
         // Check if a process is already running
         if (SystemAPI.HasSingleton<VOBReconstructionProcess>())
         {
-            // Destroy any new requests if a process is active
             foreach (var (_, requestEntity) in SystemAPI.Query<VOBYReconstructionRequest>().WithEntityAccess())
             {
                 state.EntityManager.DestroyEntity(requestEntity);
@@ -23,19 +23,20 @@ public partial struct VOBYReconstructionRequestHandlerSystem : ISystem
             .CreateCommandBuffer(state.WorldUnmanaged);
 
         // Only run if a request exists
-        foreach (var (_, requestEntity) in SystemAPI.Query<VOBYReconstructionRequest>().WithEntityAccess())
+        foreach (var (request, requestEntity) in SystemAPI.Query<VOBYReconstructionRequest>().WithEntityAccess())
         {
-            // Create the singleton to manage the process
+            // Use batchSize from the request component
             var processEntity = ecb.CreateEntity();
             ecb.AddComponent(processEntity, new VOBReconstructionProcess
             {
                 Timer = 0f,
                 NextAnimationIndex = 0,
-                BatchSize = 50,
-                BatchDelay = 0.05f // 50ms delay between batches
+                BatchSize = request.batchSize,
+                BatchDelay = request.batchDelay, // 50ms delay between batches
+                AnimationDuration = request.animationDuration, // Duration of the animation for each VOB
+                FreezeUnbatchedVOBs = request.freezeUnbatchedVOBs
             });
 
-            // Destroy the request entity
             ecb.DestroyEntity(requestEntity);
         }
     }
