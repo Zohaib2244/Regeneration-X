@@ -5,11 +5,9 @@ using Unity.Mathematics;
 
 public partial struct VOBYReconstructionSystem : ISystem
 {
-    private EntityQuery _vobyReconstructionQuery;
     public void OnCreate(ref SystemState state)
     {
-        _vobyReconstructionQuery = state.GetEntityQuery(ComponentType.ReadOnly<VOBYReconstructionRequest>());
-        state.RequireForUpdate(_vobyReconstructionQuery);
+        state.RequireForUpdate<VOBReconstructionProcess>();
     }
     
     public void OnUpdate(ref SystemState state)
@@ -17,18 +15,32 @@ public partial struct VOBYReconstructionSystem : ISystem
         var ecb = SystemAPI.GetSingleton<BeginFixedStepSimulationEntityCommandBufferSystem.Singleton>()
             .CreateCommandBuffer(state.WorldUnmanaged);
 
-        // Variable to control how many VOBs animate at once.
-        // If 1, they animate one by one. If 10, they animate in batches of 10.
-        const int batchSize = 10; 
+        // Get the singleton and update its timer
+        var processEntity = SystemAPI.GetSingletonEntity<VOBReconstructionProcess>();
+        var process = SystemAPI.GetComponentRW<VOBReconstructionProcess>(processEntity);
+        process.ValueRW.Timer += SystemAPI.Time.DeltaTime;
 
-        // Only run if a request exists
-        foreach (var (_, requestEntity) in SystemAPI.Query<VOBYReconstructionRequest>().WithEntityAccess())
+        // If the timer hasn't reached the next batch delay, do nothing
+        if (process.ValueRO.Timer < process.ValueRO.BatchDelay)
         {
-            int animationIndex = 0;
-            foreach (var (vob, transform, entity) in SystemAPI
-                .Query<RefRO<VOBComponent>, RefRO<LocalTransform>>()
-                .WithAll<PhysicsVelocity, PhysicsMass, PhysicsGravityFactor>()
-                .WithEntityAccess())
+            return;
+        }
+
+        // Timer has been reached, reset it for the next batch
+        process.ValueRW.Timer = 0f;
+
+        int animatedThisFrame = 0;
+        int startIndex = process.ValueRO.NextAnimationIndex;
+
+        // Query for all VOBs that still have physics components
+        foreach (var (vob, transform, entity) in SystemAPI
+            .Query<RefRO<VOBComponent>, RefRO<LocalTransform>>()
+            .WithAll<PhysicsVelocity, PhysicsMass, PhysicsGravityFactor>()
+            .WithEntityAccess())
+        {
+            // This logic assumes VOBs are processed in a deterministic order.
+            // A more robust solution might involve tagging VOBs with an index on creation.
+            if (animatedThisFrame < process.ValueRO.BatchSize)
             {
                 // Remove physics components
                 ecb.RemoveComponent<PhysicsVelocity>(entity);
@@ -38,11 +50,7 @@ public partial struct VOBYReconstructionSystem : ISystem
                 // Reparent to original VOBY
                 ecb.AddComponent(entity, new Parent { Value = vob.ValueRO.VOBYParent });
 
-                // Calculate delay based on the batch size
-                int batchIndex = animationIndex / batchSize;
-                float delay = batchIndex * 0.05f; // 50ms delay between batches
-
-                // Add animation component instead of snapping
+                // Add animation component to start animating now
                 ecb.AddComponent(entity, new VOBReconstructionAnimation
                 {
                     StartPosition = transform.ValueRO.Position,
@@ -50,13 +58,64 @@ public partial struct VOBYReconstructionSystem : ISystem
                     TargetPosition = vob.ValueRO.Position,
                     TargetRotation = vob.ValueRO.Rotation,
                     AnimationTime = 0f,
-                    DelayTime = delay, // Use the calculated batch delay
-                    AnimationDuration = 1.0f, // 1 second animation
-                    AnimationIndex = animationIndex
+                    DelayTime = 0f, // No delay, starts immediately
+                    AnimationDuration = 0.25f, // 1 second animation
+                    AnimationIndex = startIndex + animatedThisFrame
                 });
 
-                animationIndex++;
+                animatedThisFrame++;
             }
+        }
+
+        if (animatedThisFrame > 0)
+        {
+            // Update the index for the next batch
+            process.ValueRW.NextAnimationIndex += animatedThisFrame;
+        }
+        else
+        {
+            // No more VOBs to animate, end the process
+            ecb.DestroyEntity(processEntity);
+        }
+    }
+}
+
+// This new system will handle the initial request and set up the process
+public partial struct VOBYReconstructionRequestHandlerSystem : ISystem
+{
+    public void OnCreate(ref SystemState state)
+    {
+        state.RequireForUpdate(state.GetEntityQuery(ComponentType.ReadOnly<VOBYReconstructionRequest>()));
+    }
+
+    public void OnUpdate(ref SystemState state)
+    {
+        // Check if a process is already running
+        if (SystemAPI.HasSingleton<VOBReconstructionProcess>())
+        {
+            // Destroy any new requests if a process is active
+            foreach (var (_, requestEntity) in SystemAPI.Query<VOBYReconstructionRequest>().WithEntityAccess())
+            {
+                state.EntityManager.DestroyEntity(requestEntity);
+            }
+            return;
+        }
+
+        var ecb = SystemAPI.GetSingleton<BeginFixedStepSimulationEntityCommandBufferSystem.Singleton>()
+            .CreateCommandBuffer(state.WorldUnmanaged);
+
+        // Only run if a request exists
+        foreach (var (_, requestEntity) in SystemAPI.Query<VOBYReconstructionRequest>().WithEntityAccess())
+        {
+            // Create the singleton to manage the process
+            var processEntity = ecb.CreateEntity();
+            ecb.AddComponent(processEntity, new VOBReconstructionProcess
+            {
+                Timer = 0f,
+                NextAnimationIndex = 0,
+                BatchSize = 50,
+                BatchDelay = 0.05f // 50ms delay between batches
+            });
 
             // Destroy the request entity
             ecb.DestroyEntity(requestEntity);
