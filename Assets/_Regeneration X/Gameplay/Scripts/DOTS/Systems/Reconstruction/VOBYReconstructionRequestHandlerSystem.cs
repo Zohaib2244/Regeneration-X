@@ -34,7 +34,8 @@ public partial struct VOBYReconstructionRequestHandlerSystem : ISystem
                 BatchSize = request.batchSize,
                 BatchDelay = request.batchDelay, // 50ms delay between batches
                 AnimationDuration = request.animationDuration, // Duration of the animation for each VOB
-                FreezeUnbatchedVOBs = request.freezeUnbatchedVOBs
+                FreezeUnbatchedVOBs = request.freezeUnbatchedVOBs,
+                RandomizeVOBs = request.randomizeVOBs // Randomization control
             });
 
             ecb.DestroyEntity(requestEntity);

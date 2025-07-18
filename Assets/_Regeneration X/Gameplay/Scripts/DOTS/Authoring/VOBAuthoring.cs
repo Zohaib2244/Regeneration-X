@@ -25,6 +25,11 @@ public class VOBAuthoring : MonoBehaviour
             {
                 Value = GetEntity(authoring.VOBYParent, TransformUsageFlags.Dynamic)
             });
+            AddComponent(entity, new VOBMagneticForce
+            {
+                Force = float3.zero,
+                Velocity = float3.zero
+            });
         }
     }
 }
