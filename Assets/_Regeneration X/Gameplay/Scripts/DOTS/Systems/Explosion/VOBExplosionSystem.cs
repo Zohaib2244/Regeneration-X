@@ -4,8 +4,6 @@ using Unity.Burst;
 using Unity.Mathematics;
 using Unity.Physics.Systems;
 using Unity.Transforms;
-using System.Collections.Generic;
-using Unity.Collections;
 using Unity.Jobs;
 
 [UpdateInGroup(typeof(FixedStepSimulationSystemGroup))]
@@ -31,8 +29,6 @@ public partial struct VOBExplosionSystem : ISystem
                 ECB = ecb.AsParallelWriter(),
                 Explosion = explosionData
             }.ScheduleParallel(jobHandle);
-
-            // Do NOT call ecb.RemoveComponent here!
         }
 
         // Complete the job before using ECB directly

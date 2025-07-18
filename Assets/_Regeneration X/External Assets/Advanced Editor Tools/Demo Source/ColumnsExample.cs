@@ -12,7 +12,7 @@ namespace AdvancedEditorTools
         public int health;
         public int maxHealth;
 
-        // To jump to the next column use [NewColumn]
+        // To jump to the next column use [NewColumn]p
         [Header("Attack")]
         [NewColumn(columnWidth: 0.45f)]
         public int attackDmg;

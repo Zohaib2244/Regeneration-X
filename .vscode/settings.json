@@ -56,5 +56,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "Regeneratorion X.sln"
+    "dotnet.defaultSolution": "Regeneration X.sln"
 }

@@ -2,6 +2,7 @@ using UnityEngine;
 using Unity.Entities;
 using Unity.Mathematics;
 using AdvancedEditorTools.Attributes;
+using DG.Tweening;
 enum VOBYState
 {
     Idle,
@@ -16,7 +17,7 @@ public class ECSCommandBridge : MonoBehaviour
 
 
     [Header("Explosion Parameters")]
-
+    [BeginColumnArea(columnWidth: 0.45f)]
     [Tooltip("Transform representing the epicenter of the explosion.")]
     public Transform epicenter; // Epicenter of the explosion
 
@@ -28,8 +29,12 @@ public class ECSCommandBridge : MonoBehaviour
 
     [Tooltip("Amount of rotational force applied to VOBs during explosion.")]
     public float rotationAmount = 1f;
+    public float slowmoDuration = 0.5f; // Duration of the slow motion effect
+    public float slowmoTransitionTime = 0.5f; // Transition time for the slow motion effect
+    public float slowmoTargetTimeScale = 0.5f; // Target time scale during slow motion
 
     [Header("VOBY Reconstruction")]
+    [NewColumn(columnWidth: 0.45f)]
     [Tooltip("If true, Exploded VOBs will be frozen in place.")]
     public bool freezeUnbatchedVOBs = false;
     [Tooltip("If true, VOBs will be randomized during reconstruction.")]
@@ -41,15 +46,19 @@ public class ECSCommandBridge : MonoBehaviour
     public float animationDuration = 0.25f; // Duration of the animation for each VOB
 
     [Tooltip("Number of VOBs to process in each reconstruction batch.")]
+    [EndColumnArea(includeLast = true)]
     public int batchSize = 50; // Size of
+    
     [Header("Magnetic Mode")]
+    [BeginColumnArea(columnWidth: 0.45f)]
+    [Tooltip("Transform representing the magnet's position and orientation.")]
     public Transform magnetTransform;
-
+    [Tooltip("Radius of the magnetic field.")]
     public float magnetRadius = 10f;
-
+    [Tooltip("Force applied to VOBs in the magnetic field.")]
     public float magnetForce = 15f;
-
-
+    [Tooltip("Angle of the cone for the magnetic field in degrees.")]
+    [EndColumnArea(includeLast = true)]
     public float magnetConeAngle = 60f;
     VOBYState currentState = VOBYState.Reconstructed;
 
@@ -87,6 +96,12 @@ public class ECSCommandBridge : MonoBehaviour
             Force = force,
             RotationAmount = rotationAmount
         });
+        SoundManager.Instance.PlayExplosionSound(); // Play explosion sound
+        DOVirtual.DelayedCall(slowmoDuration + slowmoTransitionTime + slowmoTransitionTime, () =>
+        {
+            SoundManager.Instance.PlayBlockFallSound(); 
+        });
+        NuttyUtilities.TriggerSlomo(slowmoDuration, slowmoTransitionTime, slowmoTargetTimeScale); // Trigger slow motion effect
         Debug.Log($"Explosion requested with radius: {radius}, force: {force}, rotation amount: {rotationAmount}");
     }
     [Button("Request VOBY Reconstruction")]
@@ -107,8 +122,9 @@ public class ECSCommandBridge : MonoBehaviour
             freezeUnbatchedVOBs = freezeUnbatchedVOBs,
             batchSize = batchSize,
             batchDelay = batchDelay,
-            animationDuration = animationDuration
+            animationDuration = animationDuration,
         });
+        SoundManager.Instance.PlayReconstructionSound(); // Play reconstruction sound
         Debug.Log("VOBY reconstruction requested.");
     }
     #region Manetism mode
