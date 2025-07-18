@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: a990b66081ebc1f49a12417f02209b50
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 294463
+  packageName: 3D voxel Chess Pack
+  packageVersion: 1.0
+  assetPath: Assets/Chess_pack/Prefab/white_bishop.prefab
+  uploadId: 688282

@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 0f934222f3e4ab846b2db7fab165bc7b
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 294463
+  packageName: 3D voxel Chess Pack
+  packageVersion: 1.0
+  assetPath: Assets/Chess_pack/Prefab/white_pawn.prefab
+  uploadId: 688282

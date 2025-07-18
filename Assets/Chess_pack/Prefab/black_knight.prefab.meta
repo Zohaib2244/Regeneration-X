@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 207417434d4e486469e63164bcf82c72
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 294463
+  packageName: 3D voxel Chess Pack
+  packageVersion: 1.0
+  assetPath: Assets/Chess_pack/Prefab/black_knight.prefab
+  uploadId: 688282

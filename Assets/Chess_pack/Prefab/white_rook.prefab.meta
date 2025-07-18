@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 8c6cfb36b0d16f24fbac0a3cc3374303
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 294463
+  packageName: 3D voxel Chess Pack
+  packageVersion: 1.0
+  assetPath: Assets/Chess_pack/Prefab/white_rook.prefab
+  uploadId: 688282

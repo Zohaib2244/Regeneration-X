@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: e33b1949558e47544a03594e855ca9f0
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 294463
+  packageName: 3D voxel Chess Pack
+  packageVersion: 1.0
+  assetPath: Assets/Chess_pack/Prefab/black_queen.prefab
+  uploadId: 688282
