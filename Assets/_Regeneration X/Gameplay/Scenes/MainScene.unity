@@ -377,66 +377,6 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 1
---- !u!114 &629824785
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 91035bcb2ca13824395c1c51b162bf3f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  baseInspectorFoldout: 0
-  layoutInfos:
-  - rid: 4210605472892059772
-  - rid: 4210605472892059773
-  - rid: 4210605472892059774
-  buttonMethods:
-  - rid: 4210605472892059775
-  - rid: 4210605472892059776
-  references:
-    version: 2
-    RefIds:
-    - rid: 4210605472892059772
-      type: {class: BeginColumnAreaInfo, ns: AdvancedEditorTools, asm: Assembly-CSharp}
-      data:
-        fieldName: epicenter
-        fieldTypeName: UnityEngine.Transform, UnityEngine.CoreModule, Version=0.0.0.0,
-          Culture=neutral, PublicKeyToken=null
-        windowStyle: 0
-        columnStyle: 1
-    - rid: 4210605472892059773
-      type: {class: NewColumnInfo, ns: AdvancedEditorTools, asm: Assembly-CSharp}
-      data:
-        fieldName: freezeUnbatchedVOBs
-        fieldTypeName: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral,
-          PublicKeyToken=b77a5c561934e089
-    - rid: 4210605472892059774
-      type: {class: EndColumnAreaInfo, ns: AdvancedEditorTools, asm: Assembly-CSharp}
-      data:
-        fieldName: batchSize
-        fieldTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
-          PublicKeyToken=b77a5c561934e089
-        includeLast: 1
-    - rid: 4210605472892059775
-      type: {class: ButtonInfo, ns: AdvancedEditorTools, asm: Assembly-CSharp}
-      data:
-        methodName: RequestExplosion
-        buttonName: Explosive Protocol
-        foldout: 1
-        buttonSize: 15
-        parameters: []
-    - rid: 4210605472892059776
-      type: {class: ButtonInfo, ns: AdvancedEditorTools, asm: Assembly-CSharp}
-      data:
-        methodName: RequestVOBYReconstruction
-        buttonName: Entropic Reconstitution Sequence
-        foldout: 1
-        buttonSize: 15
-        parameters: []
 --- !u!1 &686139579
 GameObject:
   m_ObjectHideFlags: 1
@@ -468,9 +408,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dataDict:
     keys:
-    - {fileID: 1546860107}
+    - {fileID: 1546860109}
     values:
-    - {fileID: 629824785}
+    - {fileID: 1780523144}
   extensionEnabled: 1
   debugMode: 0
 --- !u!4 &686139581
@@ -632,7 +572,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1546860108}
-  - component: {fileID: 1546860107}
+  - component: {fileID: 1546860109}
   m_Layer: 0
   m_Name: ECSCommandBridge
   m_TagString: Untagged
@@ -640,7 +580,22 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1546860107
+--- !u!4 &1546860108
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1546860106}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 149.48378, y: -15.832599, z: -1.1932886}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1546860109
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -657,24 +612,68 @@ MonoBehaviour:
   force: 10
   rotationAmount: 1
   freezeUnbatchedVOBs: 0
+  randomizeVOBs: 0
   batchDelay: 0.05
   animationDuration: 0.25
   batchSize: 50
---- !u!4 &1546860108
-Transform:
+  magnetTransform: {fileID: 1466348713}
+  magnetRadius: 10
+  magnetForce: 15
+  magnetConeAngle: 45
+--- !u!114 &1780523144
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1546860106}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 149.48378, y: -15.832599, z: -1.1932886}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91035bcb2ca13824395c1c51b162bf3f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  baseInspectorFoldout: 0
+  layoutInfos: []
+  buttonMethods:
+  - rid: 7802475774295933063
+  - rid: 7802475774295933064
+  - rid: 7802475774295933065
+  - rid: 7802475774295933066
+  references:
+    version: 2
+    RefIds:
+    - rid: 7802475774295933063
+      type: {class: ButtonInfo, ns: AdvancedEditorTools, asm: Assembly-CSharp}
+      data:
+        methodName: RequestExplosion
+        buttonName: Request Explosion
+        foldout: 1
+        buttonSize: 12
+        parameters: []
+    - rid: 7802475774295933064
+      type: {class: ButtonInfo, ns: AdvancedEditorTools, asm: Assembly-CSharp}
+      data:
+        methodName: RequestVOBYReconstruction
+        buttonName: Request VOBY Reconstruction
+        foldout: 1
+        buttonSize: 12
+        parameters: []
+    - rid: 7802475774295933065
+      type: {class: ButtonInfo, ns: AdvancedEditorTools, asm: Assembly-CSharp}
+      data:
+        methodName: RequestMagneticMode
+        buttonName: Request Magnetic Mode
+        foldout: 1
+        buttonSize: 12
+        parameters: []
+    - rid: 7802475774295933066
+      type: {class: ButtonInfo, ns: AdvancedEditorTools, asm: Assembly-CSharp}
+      data:
+        methodName: DeactivateMagneticField
+        buttonName: Deactivate Magnetic Field
+        foldout: 1
+        buttonSize: 12
+        parameters: []
 --- !u!1 &1887609058
 GameObject:
   m_ObjectHideFlags: 0
@@ -734,8 +733,8 @@ SceneRoots:
   m_Roots:
   - {fileID: 330585546}
   - {fileID: 410087041}
-  - {fileID: 832575519}
   - {fileID: 686139581}
   - {fileID: 1887609060}
-  - {fileID: 1466348713}
   - {fileID: 1546860108}
+  - {fileID: 1466348713}
+  - {fileID: 832575519}
