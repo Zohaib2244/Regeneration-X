@@ -33,7 +33,8 @@ public class ECSCommandBridge : MonoBehaviour
     [NewColumn(columnWidth: 0.5f)]
     [Tooltip("If true, Exploded VOBs will be frozen in place.")]
     public bool freezeUnbatchedVOBs = false;
-    
+    [Tooltip("If true, VOBs will be randomized during reconstruction.")]
+    public bool randomizeVOBs = false; // New field to control randomization of VOBs
     [Tooltip("Delay in seconds between processing each batch of VOBs.")]
     public float batchDelay = 0.05f; // Delay between batches in seconds
     
@@ -87,6 +88,7 @@ public class ECSCommandBridge : MonoBehaviour
         var requestEntity = ecsWorld.EntityManager.CreateEntity(typeof(VOBYReconstructionRequest));
         ecsWorld.EntityManager.SetComponentData(requestEntity, new VOBYReconstructionRequest
         {
+            randomizeVOBs = randomizeVOBs,
             freezeUnbatchedVOBs = freezeUnbatchedVOBs,
             batchSize = batchSize,
             batchDelay = batchDelay,
