@@ -195,9 +195,9 @@ public partial class MagneticSystem : SystemBase
                     magneticForce.ValueRW.Velocity = math.lerp(magneticForce.ValueRW.Velocity, forceVector, deltaTime * 5f);
 
                     // Clear any return animation
-                    if (SystemAPI.HasComponent<VOBReconstructionAnimation>(entity))
+                    if (SystemAPI.HasComponent<VOBDefaultReconstructionAnimation>(entity))
                     {
-                        ecb.RemoveComponent<VOBReconstructionAnimation>(entity);
+                        ecb.RemoveComponent<VOBDefaultReconstructionAnimation>(entity);
                     }
 
                     // Apply movement
@@ -331,7 +331,7 @@ public partial class MagneticSystem : SystemBase
             var originalRotation = vobComponent.Rotation;
 
             // Check if we need to start a return animation using your existing system
-            if (!SystemAPI.HasComponent<VOBReconstructionAnimation>(entity))
+            if (!SystemAPI.HasComponent<VOBDefaultReconstructionAnimation>(entity))
             {
                 // Calculate current world position for distance check
                 float3 currentWorldPos = transform.Position;
@@ -344,7 +344,7 @@ public partial class MagneticSystem : SystemBase
                 if (math.distance(currentWorldPos, originalPosition) > 0.1f)
                 {
                     // Use EntityCommandBuffer to add component
-                    ecb.AddComponent(entity, new VOBReconstructionAnimation
+                    ecb.AddComponent(entity, new VOBDefaultReconstructionAnimation
                     {
                         StartPosition = currentWorldPos,
                         StartRotation = transform.Rotation,

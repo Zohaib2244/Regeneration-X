@@ -106,40 +106,65 @@ public partial struct VOBYReconstructionSystem : ISystem
                 Scale = currentWorldScale
             });
 
-            // Add animation component - still use world positions for interpolation
-            ecb.AddComponent(entity, new VOBReconstructionAnimation
+            switch (process.ValueRO.ReconstructionType)
             {
-                StartPosition = currentWorldPos,     // World position
-                StartRotation = currentWorldRot,     // World rotation
-                TargetPosition = vob.Position,       // Target world position
-                TargetRotation = vob.Rotation,       // Target world rotation
-                AnimationTime = 0f,
-                DelayTime = 0f,
-                AnimationDuration = process.ValueRO.AnimationDuration, // Use the duration from the process
-                AnimationIndex = startIndex + animatedThisFrame
-            });
+                case ReconstructionType.Default:
+                    // Add default animation component
+                    ecb.AddComponent(entity, new VOBDefaultReconstructionAnimation
+                    {
+                        StartPosition = currentWorldPos, // World position
+                        StartRotation = currentWorldRot, // World rotation
+                        TargetPosition = vob.Position,   // Target world position
+                        TargetRotation = vob.Rotation,   // Target world rotation
+                        AnimationTime = 0f,
+                        DelayTime = 0f,
+                        AnimationDuration = process.ValueRO.AnimationDuration, // Use the duration from the process
+                        AnimationIndex = startIndex + animatedThisFrame
+                    });
+                    break;
+
+                case ReconstructionType.Spiral:
+                    // Add spiral animation component - still use world positions for interpolation
+                    ecb.AddComponent(entity, new VOBSpiralReconstructionAnimation
+                    {
+                        StartPosition = currentWorldPos,
+                        StartRotation = currentWorldRot,
+                        TargetPosition = vob.Position,
+                        TargetRotation = vob.Rotation,
+                        SpiralCenter = process.ValueRO.Epicenter, // Assuming spiral center is at the target position
+                        SpiralRadius = 4f,           // Example radius, adjust as needed
+                        SpiralHeight = 6f,           // Example height, adjust as needed
+                        SpiralRotations = 4f,        // Example rotations, adjust as needed
+                        AnimationTime = 0f,
+                        DelayTime = animatedThisFrame * 0.05f,
+                        SpiralDuration = process.ValueRO.AnimationDuration * 2f, // Adjust duration for spiral phase
+                        MoveDuration = process.ValueRO.AnimationDuration / 2f,   // Adjust duration for move phase
+                        AnimationIndex = startIndex + animatedThisFrame
+                    });
+                    break;
+            }
+        // If FreezeUnbatchedVOBs is true, freeze all remaining VOBs
+        if (process.ValueRO.FreezeUnbatchedVOBs)
+        {
+            for (int j = 0; j < vobEntities.Length; j++)
+            {
+                var _entity = vobEntities[j];
+
+                // Skip entities that are already being processed in this batch
+                if (processedEntities.Contains(_entity))
+                    continue;
+
+                // Remove physics components to freeze the VOB
+                ecb.RemoveComponent<PhysicsVelocity>(_entity);
+                ecb.RemoveComponent<PhysicsMass>(_entity);
+                ecb.RemoveComponent<PhysicsGravityFactor>(_entity);
+            }
+        }
             ecb.RemoveComponent<VOBExplodedTag>(entity); // Remove exploded tag if exists
 
             animatedThisFrame++;
         }
 
-        // If FreezeUnbatchedVOBs is true, freeze all remaining VOBs
-        if (process.ValueRO.FreezeUnbatchedVOBs)
-        {
-            for (int i = 0; i < vobEntities.Length; i++)
-            {
-                var entity = vobEntities[i];
-
-                // Skip entities that are already being processed in this batch
-                if (processedEntities.Contains(entity))
-                    continue;
-
-                // Remove physics components to freeze the VOB
-                ecb.RemoveComponent<PhysicsVelocity>(entity);
-                ecb.RemoveComponent<PhysicsMass>(entity);
-                ecb.RemoveComponent<PhysicsGravityFactor>(entity);
-            }
-        }
 
         processedEntities.Dispose();
         vobEntities.Dispose();

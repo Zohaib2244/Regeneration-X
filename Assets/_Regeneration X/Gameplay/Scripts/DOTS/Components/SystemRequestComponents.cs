@@ -23,10 +23,13 @@ public struct VOBYReconstructionRequest : IComponentData
     public int batchSize; // Size of each batch for reconstruction
     public float batchDelay; // Delay between batches in seconds
     public float animationDuration; // Duration of the animation for each VOB
+    public ReconstructionType reconstructionType; // Type of reconstruction (default or spiral)
+    public float3 epicenter; // Epicenter of the reconstruction
 }
 //* VOBReconstructionProcess component
 public struct VOBReconstructionProcess : IComponentData
 {
+    public float3 Epicenter;
     public float Timer;
     public int NextAnimationIndex;
     public int BatchSize;
@@ -34,7 +37,9 @@ public struct VOBReconstructionProcess : IComponentData
     public bool FreezeUnbatchedVOBs; // New field to control freezing of unbatched VOBs
     public float AnimationDuration; // Duration of the animation for each VOB
     public bool RandomizeVOBs; // New field to control randomization of VOBs
+    public ReconstructionType ReconstructionType; // Type of reconstruction (default or spiral)
 }
+
 #endregion
 #region Magnetism Components
 

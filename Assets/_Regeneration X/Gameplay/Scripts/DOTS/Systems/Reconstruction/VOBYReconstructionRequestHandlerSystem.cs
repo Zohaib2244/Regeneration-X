@@ -29,13 +29,15 @@ public partial struct VOBYReconstructionRequestHandlerSystem : ISystem
             var processEntity = ecb.CreateEntity();
             ecb.AddComponent(processEntity, new VOBReconstructionProcess
             {
+                Epicenter = request.epicenter, // Set epicenter from request
                 Timer = 0f,
                 NextAnimationIndex = 0,
                 BatchSize = request.batchSize,
                 BatchDelay = request.batchDelay, // 50ms delay between batches
                 AnimationDuration = request.animationDuration, // Duration of the animation for each VOB
                 FreezeUnbatchedVOBs = request.freezeUnbatchedVOBs,
-                RandomizeVOBs = request.randomizeVOBs // Randomization control
+                RandomizeVOBs = request.randomizeVOBs, // Randomization control
+                ReconstructionType = request.reconstructionType // Type of reconstruction
             });
 
             ecb.DestroyEntity(requestEntity);

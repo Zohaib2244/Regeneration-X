@@ -32,3 +32,8 @@ public static class NuttyUtilities
             });
     }
 }
+public enum ReconstructionType
+{
+    Default,
+    Spiral
+}

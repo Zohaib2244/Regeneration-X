@@ -15,7 +15,6 @@ public class ECSCommandBridge : MonoBehaviour
     // Reference to the ECS world
     private World ecsWorld;
 
-
     [Header("Explosion Parameters")]
     [BeginColumnArea(columnWidth: 0.45f)]
     [Tooltip("Transform representing the epicenter of the explosion.")]
@@ -33,8 +32,12 @@ public class ECSCommandBridge : MonoBehaviour
     public float slowmoTransitionTime = 0.5f; // Transition time for the slow motion effect
     public float slowmoTargetTimeScale = 0.5f; // Target time scale during slow motion
 
+
+
     [Header("VOBY Reconstruction")]
     [NewColumn(columnWidth: 0.45f)]
+    [Tooltip("Type of reconstruction animation to use.")]
+    public ReconstructionType reconstructionType = ReconstructionType.Default; // Type of reconstruction (default or spiral)
     [Tooltip("If true, Exploded VOBs will be frozen in place.")]
     public bool freezeUnbatchedVOBs = false;
     [Tooltip("If true, VOBs will be randomized during reconstruction.")]
@@ -48,7 +51,9 @@ public class ECSCommandBridge : MonoBehaviour
     [Tooltip("Number of VOBs to process in each reconstruction batch.")]
     [EndColumnArea(includeLast = true)]
     public int batchSize = 50; // Size of
-    
+
+
+
     [Header("Magnetic Mode")]
     [BeginColumnArea(columnWidth: 0.45f)]
     [Tooltip("Transform representing the magnet's position and orientation.")]
@@ -62,6 +67,7 @@ public class ECSCommandBridge : MonoBehaviour
     public float magnetConeAngle = 60f;
     VOBYState currentState = VOBYState.Reconstructed;
 
+    #region Essentials
     private void Awake()
     {
         // Initialize the ECS world
@@ -75,6 +81,8 @@ public class ECSCommandBridge : MonoBehaviour
             UpdateMagnetPosition();
         }
     }
+    #endregion
+
 
     [Button("Request Explosion")]
     // Method to send an explosion request
@@ -99,7 +107,7 @@ public class ECSCommandBridge : MonoBehaviour
         SoundManager.Instance.PlayExplosionSound(); // Play explosion sound
         DOVirtual.DelayedCall(slowmoDuration + slowmoTransitionTime + slowmoTransitionTime, () =>
         {
-            SoundManager.Instance.PlayBlockFallSound(); 
+            SoundManager.Instance.PlayBlockFallSound();
         });
         NuttyUtilities.TriggerSlomo(slowmoDuration, slowmoTransitionTime, slowmoTargetTimeScale); // Trigger slow motion effect
         Debug.Log($"Explosion requested with radius: {radius}, force: {force}, rotation amount: {rotationAmount}");
@@ -123,6 +131,7 @@ public class ECSCommandBridge : MonoBehaviour
             batchSize = batchSize,
             batchDelay = batchDelay,
             animationDuration = animationDuration,
+            reconstructionType = reconstructionType // Set the type of reconstruction
         });
         SoundManager.Instance.PlayReconstructionSound(); // Play reconstruction sound
         Debug.Log("VOBY reconstruction requested.");
@@ -175,7 +184,7 @@ public class ECSCommandBridge : MonoBehaviour
             ecsWorld.EntityManager.SetComponentData(entity, field);
         }
 
-    entities.Dispose();
+        entities.Dispose();
         Debug.Log("Magnetic field deactivated.");
     }
     #endregion
