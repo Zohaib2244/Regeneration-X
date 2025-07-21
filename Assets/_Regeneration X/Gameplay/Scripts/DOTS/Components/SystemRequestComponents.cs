@@ -18,6 +18,7 @@ public struct ExplosionRequest : IComponentData
 //* VOBYReconstructionRequest component
 public struct VOBYReconstructionRequest : IComponentData
 {
+    public float3 reconstructionPoint;
     public bool randomizeVOBs; // New field to control randomization of VOBs
     public bool freezeUnbatchedVOBs; // New field to control freezing of unbatched VOBs
     public int batchSize; // Size of each batch for reconstruction

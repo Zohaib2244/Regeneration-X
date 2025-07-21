@@ -36,6 +36,7 @@ public class ECSCommandBridge : MonoBehaviour
 
     [Header("VOBY Reconstruction")]
     [NewColumn(columnWidth: 0.45f)]
+    public Transform reconstructionPoint; // Point where VOBs will be reconstructed
     [Tooltip("Type of reconstruction animation to use.")]
     public ReconstructionType reconstructionType = ReconstructionType.Default; // Type of reconstruction (default or spiral)
     [Tooltip("If true, Exploded VOBs will be frozen in place.")]
@@ -126,6 +127,7 @@ public class ECSCommandBridge : MonoBehaviour
         var requestEntity = ecsWorld.EntityManager.CreateEntity(typeof(VOBYReconstructionRequest));
         ecsWorld.EntityManager.SetComponentData(requestEntity, new VOBYReconstructionRequest
         {
+            reconstructionPoint = reconstructionPoint.position, // Set the reconstruction point
             randomizeVOBs = randomizeVOBs,
             freezeUnbatchedVOBs = freezeUnbatchedVOBs,
             batchSize = batchSize,
