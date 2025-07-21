@@ -1,10 +1,12 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
+using UnityEngine;
 public partial struct VOBYReconstructionRequestHandlerSystem : ISystem
 {
     public void OnCreate(ref SystemState state)
@@ -26,7 +28,7 @@ public partial struct VOBYReconstructionRequestHandlerSystem : ISystem
 
         var ecb = SystemAPI.GetSingleton<BeginFixedStepSimulationEntityCommandBufferSystem.Singleton>()
             .CreateCommandBuffer(state.WorldUnmanaged);
-
+        UpdateVOBTransformsPerShape(ref state);
         SetVOBSIndex(ref state);
         // Only run if a request exists
         foreach (var (request, requestEntity) in SystemAPI.Query<VOBYReconstructionRequest>().WithEntityAccess())
@@ -49,8 +51,43 @@ public partial struct VOBYReconstructionRequestHandlerSystem : ISystem
             ecb.DestroyEntity(requestEntity);
         }
     }
+    #region VOB Transform Data Updating
+    // Remove [BurstCompile] from this method!
+    void UpdateVOBTransformsPerShape(ref SystemState state)
+    {
+        // Extract the transforms data from the json
+        if (!SystemAPI.TryGetSingleton<VOBYReconstructionRequest>(out var request))
+            return;
+        var JSONSavePath = $"Assets/Resources/{request.VOBYShape}.json";
+        if (!File.Exists(JSONSavePath))
+            return;
+    
+        string json = File.ReadAllText(JSONSavePath);
+        var vobData = JsonUtility.FromJson<Serialization<VOBTransformData>>(json);
+        if (vobData == null || vobData.items == null || vobData.items.Count == 0)
+            return;
+    
+        // Query all entities with VOBComponent
+        var vobQuery = SystemAPI.QueryBuilder()
+            .WithAll<VOBComponent>()
+            .Build();
+    
+        int i = 0;
+        foreach (var entity in vobQuery.ToEntityArray(Allocator.Temp))
+        {
+            if (i >= vobData.items.Count)
+                break;
+    
+            var vobRW = SystemAPI.GetComponentRW<VOBComponent>(entity);
+            vobRW.ValueRW.Position = vobData.items[i].position;
+            vobRW.ValueRW.Rotation = vobData.items[i].rotation;
+            i++;
+        }
+    }
+    #endregion
+    #region VOB Index Updating
     [BurstCompile]
-    public void SetVOBSIndex(ref SystemState state)
+    void SetVOBSIndex(ref SystemState state)
     {
         if (!SystemAPI.TryGetSingleton<VOBYReconstructionRequest>(out var request))
             return;
@@ -128,4 +165,6 @@ public partial struct VOBYReconstructionRequestHandlerSystem : ISystem
 
         return i + 1;
     }
+    #endregion
+
 }

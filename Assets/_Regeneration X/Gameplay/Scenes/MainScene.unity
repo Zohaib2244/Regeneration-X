@@ -133,10 +133,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   baseInspectorFoldout: 0
   layoutInfos: []
-  buttonMethods: []
+  buttonMethods:
+  - rid: 4210605559528292597
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 4210605559528292597
+      type: {class: ButtonInfo, ns: AdvancedEditorTools, asm: Assembly-CSharp}
+      data:
+        methodName: ExtractVOBsTransforms
+        buttonName: Extract VOBs Transforms
+        foldout: 1
+        buttonSize: 12
+        parameters: []
 --- !u!114 &249767912
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -151,20 +160,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   baseInspectorFoldout: 0
   layoutInfos:
-  - rid: 4210605505451917716
-  - rid: 4210605505451917717
-  - rid: 4210605505451917718
-  - rid: 4210605505451917719
-  - rid: 4210605505451917720
+  - rid: 4210605559528292628
+  - rid: 4210605559528292629
+  - rid: 4210605559528292630
+  - rid: 4210605559528292631
+  - rid: 4210605559528292632
   buttonMethods:
-  - rid: 4210605505451917721
-  - rid: 4210605505451917722
-  - rid: 4210605505451917723
-  - rid: 4210605505451917724
+  - rid: 4210605559528292633
+  - rid: 4210605559528292634
+  - rid: 4210605559528292635
+  - rid: 4210605559528292636
   references:
     version: 2
     RefIds:
-    - rid: 4210605505451917716
+    - rid: 4210605559528292628
       type: {class: BeginColumnAreaInfo, ns: AdvancedEditorTools, asm: Assembly-CSharp}
       data:
         fieldName: epicenter
@@ -172,20 +181,20 @@ MonoBehaviour:
           Culture=neutral, PublicKeyToken=null
         windowStyle: 0
         columnStyle: 1
-    - rid: 4210605505451917717
+    - rid: 4210605559528292629
       type: {class: NewColumnInfo, ns: AdvancedEditorTools, asm: Assembly-CSharp}
       data:
-        fieldName: reconstructionType
-        fieldTypeName: ReconstructionType, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
-          PublicKeyToken=null
-    - rid: 4210605505451917718
+        fieldName: reconstructionPoint
+        fieldTypeName: UnityEngine.Transform, UnityEngine.CoreModule, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    - rid: 4210605559528292630
       type: {class: EndColumnAreaInfo, ns: AdvancedEditorTools, asm: Assembly-CSharp}
       data:
         fieldName: batchSize
         fieldTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
         includeLast: 1
-    - rid: 4210605505451917719
+    - rid: 4210605559528292631
       type: {class: BeginColumnAreaInfo, ns: AdvancedEditorTools, asm: Assembly-CSharp}
       data:
         fieldName: magnetTransform
@@ -193,14 +202,14 @@ MonoBehaviour:
           Culture=neutral, PublicKeyToken=null
         windowStyle: 0
         columnStyle: 1
-    - rid: 4210605505451917720
+    - rid: 4210605559528292632
       type: {class: EndColumnAreaInfo, ns: AdvancedEditorTools, asm: Assembly-CSharp}
       data:
         fieldName: magnetConeAngle
         fieldTypeName: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
           PublicKeyToken=b77a5c561934e089
         includeLast: 1
-    - rid: 4210605505451917721
+    - rid: 4210605559528292633
       type: {class: ButtonInfo, ns: AdvancedEditorTools, asm: Assembly-CSharp}
       data:
         methodName: RequestExplosion
@@ -208,7 +217,7 @@ MonoBehaviour:
         foldout: 1
         buttonSize: 12
         parameters: []
-    - rid: 4210605505451917722
+    - rid: 4210605559528292634
       type: {class: ButtonInfo, ns: AdvancedEditorTools, asm: Assembly-CSharp}
       data:
         methodName: RequestVOBYReconstruction
@@ -216,7 +225,7 @@ MonoBehaviour:
         foldout: 1
         buttonSize: 12
         parameters: []
-    - rid: 4210605505451917723
+    - rid: 4210605559528292635
       type: {class: ButtonInfo, ns: AdvancedEditorTools, asm: Assembly-CSharp}
       data:
         methodName: RequestMagneticMode
@@ -224,7 +233,7 @@ MonoBehaviour:
         foldout: 1
         buttonSize: 12
         parameters: []
-    - rid: 4210605505451917724
+    - rid: 4210605559528292636
       type: {class: ButtonInfo, ns: AdvancedEditorTools, asm: Assembly-CSharp}
       data:
         methodName: DeactivateMagneticField
@@ -369,6 +378,92 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!1 &375044064
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 375044067}
+  - component: {fileID: 375044066}
+  - component: {fileID: 375044065}
+  m_Layer: 0
+  m_Name: ReconstructionPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!23 &375044065
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 375044064}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &375044066
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 375044064}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &375044067
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 375044064}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.63, y: 7.79, z: 0}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_ConstrainProportionsScale: 1
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &686139579
 GameObject:
   m_ObjectHideFlags: 1
@@ -704,7 +799,7 @@ Transform:
   m_GameObject: {fileID: 1546860106}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 149.48378, y: -15.832599, z: -1.1932886}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -729,7 +824,9 @@ MonoBehaviour:
   slowmoDuration: 0.5
   slowmoTransitionTime: 0.5
   slowmoTargetTimeScale: 0.5
-  reconstructionType: 1
+  reconstructionPoint: {fileID: 375044067}
+  vobyShape: 1
+  reconstructionType: 0
   freezeUnbatchedVOBs: 0
   randomizeVOBs: 0
   batchDelay: 0.05
@@ -1046,6 +1143,7 @@ SceneRoots:
   - {fileID: 1887609060}
   - {fileID: 1546860108}
   - {fileID: 1466348713}
+  - {fileID: 375044067}
   - {fileID: 832575519}
   - {fileID: 1871746696}
   - {fileID: 1385099970}

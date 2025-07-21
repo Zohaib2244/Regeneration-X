@@ -7,7 +7,6 @@ using Unity.Physics.Authoring;
 public class VOBYConfigurerTool : EditorWindow
 {
     private GameObject vobyGameObject;
-    private Transform referenceTransform;
 
     [MenuItem("NuttyTools/VOBY Configurer Tool")]
     public static void ShowWindow()
@@ -19,8 +18,6 @@ public class VOBYConfigurerTool : EditorWindow
     {
         GUILayout.Label("VOBY Configurer", EditorStyles.boldLabel);
         vobyGameObject = (GameObject)EditorGUILayout.ObjectField("VOBY GameObject", vobyGameObject, typeof(GameObject), true);
-        referenceTransform = (Transform)EditorGUILayout.ObjectField("Reference Transform", referenceTransform, typeof(Transform), true);
-
         if (GUILayout.Button("Find VOBs & Configure"))
         {
             ConfigureVOBs();
@@ -29,7 +26,7 @@ public class VOBYConfigurerTool : EditorWindow
 
     private void ConfigureVOBs()
     {
-        if (vobyGameObject == null || referenceTransform == null)
+        if (vobyGameObject == null)
         {
             Debug.LogError("Please assign all fields.");
             return;
