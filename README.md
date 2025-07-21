@@ -8,21 +8,27 @@ A **Unity 6 showcase project** that demonstrates a **visually satisfying explosi
 
 ---
 
-## 🚀 Features
+## 🧩 Main Modes & Features
 
-### 💥 Mesh Explosion
-Break any 3D mesh or structure into realistic pieces using **Rayfire**, and explode them outward using **physics-based forces** or custom motion.
+### 💥 Explosion
+- **Epicenter-based force:** Applies an outward force from a chosen epicenter, affecting all VOBs (fragments) within a radius.
+- **Slomo effect:** Explosion is slowed down for a visually satisfying, cinematic look.
 
-### 🔁 Reconstruction
-Watch as the fragments **return to their original positions**, physically animating to reconstruct the mesh — piece by piece, frame by frame.
+### �️ Reconstruction
+- **Reconstruction point:** VOBs animate back to their original positions, starting with the ones closest to the reconstruction point.
+- **Order control:**  
+  - **Randomize VOBs:** Optionally randomizes the order in which VOBs reconstruct, or uses proximity to the reconstruction point.
+  - **Freeze Unbatched VOBs:** If enabled, all VOBs freeze in place (even in mid-air) before reconstruction begins; if disabled, unbatched VOBs continue to simulate physics during reconstruction.
+- **Reconstruction types:**  
+  - **Default:** VOBs return to their original positions with smooth, linear motion.
+  - **Spiral:** VOBs follow a spiral path as they animate back to their original positions (the main highlight!).
+- **Highly customizable:** Easily switch between modes and tweak behaviors for unique effects.
 
-### ⏸️ Pause & Rewind
-Control time during the explosion:
-- ⏸️ **Pause**: Freeze fragments mid-air  
-- ▶️ **Resume**: Continue the explosion forward  
-- ⏮️ **Rewind**: Retrace steps back to the original shape
+### 🧲 Magnetic Mode
+- **Magnetic point:** VOBs are attracted and deform toward a specified magnetic point, creating dynamic and organic movement.
 
 ---
+
 
 ## 🎯 Technologies Used
 
