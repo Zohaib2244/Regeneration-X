@@ -54,24 +54,22 @@ public partial struct VOBYReconstructionRequestHandlerSystem : ISystem
     {
         if (!SystemAPI.TryGetSingleton<VOBYReconstructionRequest>(out var request))
             return;
-    
+
         float3 referencePoint = request.reconstructionPoint;
-    
+
         var query = SystemAPI.QueryBuilder().WithAll<VOBComponent, LocalToWorld>().Build();
         int entityCount = query.CalculateEntityCount();
-        
+
         var entities = new NativeArray<Entity>(entityCount, Allocator.Temp);
         var distances = new NativeArray<float>(entityCount, Allocator.Temp);
-        
         int index = 0;
-        foreach (var (localToWorld, entity) in SystemAPI.Query<RefRO<LocalToWorld>>().WithAll<VOBComponent>().WithEntityAccess())
+        foreach (var (vob, entity) in SystemAPI.Query<RefRO<VOBComponent>>().WithAll<LocalToWorld>().WithEntityAccess())
         {
-            float3 worldPos = localToWorld.ValueRO.Position;
+            float3 originalPos = vob.ValueRO.Position;
             entities[index] = entity;
-            distances[index] = math.distance(worldPos, referencePoint);
+            distances[index] = math.distance(originalPos, referencePoint);
             index++;
         }
-    
         // Quick sort implementation
         QuickSort(ref entities, ref distances, 0, entityCount - 1);
 
@@ -81,7 +79,7 @@ public partial struct VOBYReconstructionRequestHandlerSystem : ISystem
             var vob = SystemAPI.GetComponentRW<VOBComponent>(entities[i]);
             vob.ValueRW.VOBIndex = i + 1;
         }
-    
+
         entities.Dispose();
         distances.Dispose();
     }
@@ -95,39 +93,39 @@ public partial struct VOBYReconstructionRequestHandlerSystem : ISystem
             QuickSort(ref entities, ref distances, pivotIndex + 1, high);
         }
     }
-    
- [BurstCompile]
-private static int Partition(ref NativeArray<Entity> entities, ref NativeArray<float> distances, int low, int high)
-{
-    float pivot = distances[high];
-    int i = low - 1;
 
-    for (int j = low; j < high; j++)
+    [BurstCompile]
+    private static int Partition(ref NativeArray<Entity> entities, ref NativeArray<float> distances, int low, int high)
     {
-        if (distances[j] <= pivot)
+        float pivot = distances[high];
+        int i = low - 1;
+
+        for (int j = low; j < high; j++)
         {
-            i++;
-            // Swap distances
-            float tempDist = distances[i];
-            distances[i] = distances[j];
-            distances[j] = tempDist;
+            if (distances[j] <= pivot)
+            {
+                i++;
+                // Swap distances
+                float tempDist = distances[i];
+                distances[i] = distances[j];
+                distances[j] = tempDist;
 
-            // Swap entities
-            Entity tempEntity = entities[i];
-            entities[i] = entities[j];
-            entities[j] = tempEntity;
+                // Swap entities
+                Entity tempEntity = entities[i];
+                entities[i] = entities[j];
+                entities[j] = tempEntity;
+            }
         }
+
+        // Swap with pivot
+        float tempDistPivot = distances[i + 1];
+        distances[i + 1] = distances[high];
+        distances[high] = tempDistPivot;
+
+        Entity tempEntityPivot = entities[i + 1];
+        entities[i + 1] = entities[high];
+        entities[high] = tempEntityPivot;
+
+        return i + 1;
     }
-
-    // Swap with pivot
-    float tempDistPivot = distances[i + 1];
-    distances[i + 1] = distances[high];
-    distances[high] = tempDistPivot;
-
-    Entity tempEntityPivot = entities[i + 1];
-    entities[i + 1] = entities[high];
-    entities[high] = tempEntityPivot;
-
-    return i + 1;
-}
 }
