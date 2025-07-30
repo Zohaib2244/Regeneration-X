@@ -71,3 +71,12 @@ public struct MagneticRequest : IComponentData
     public float ConeAngle;
 }
 #endregion
+#region PulsateRequest
+public struct VOBYPulsateRequest : IComponentData
+{
+    public bool IsActive;
+    public float Strength;
+    public float Duration;
+    public float3 Center;
+}
+#endregion 

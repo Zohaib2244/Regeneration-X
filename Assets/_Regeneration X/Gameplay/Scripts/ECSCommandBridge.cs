@@ -60,6 +60,7 @@ public class ECSCommandBridge : MonoBehaviour
 
     [Header("Magnetic Mode")]
     [BeginColumnArea(columnWidth: 0.45f)]
+    public bool magneticMode = false; // Flag to enable/disable magnetic mode
     [Tooltip("Transform representing the magnet's position and orientation.")]
     public Transform magnetTransform;
     [Tooltip("Radius of the magnetic field.")]
@@ -67,8 +68,21 @@ public class ECSCommandBridge : MonoBehaviour
     [Tooltip("Force applied to VOBs in the magnetic field.")]
     public float magnetForce = 15f;
     [Tooltip("Angle of the cone for the magnetic field in degrees.")]
-    [EndColumnArea(includeLast = true)]
     public float magnetConeAngle = 60f;
+
+    [Header("VOBY Pulsate")]
+    [NewColumn(columnWidth: 0.45f)]
+    [Tooltip("Enable or disable the pulsate effect.")]
+    public bool pulsateActive = false;
+    [Tooltip("Strength of the pulsate effect.")]
+    public float pulsateStrength = 2f;
+    [Tooltip("Duration of the pulsate effect.")]
+    public float pulsateDuration = 1f;
+    [Tooltip("Center point for the pulsate effect.")]
+    [EndColumnArea(includeLast = true)]
+    public Transform pulsateCenter;
+
+
     VOBYState currentState = VOBYState.Reconstructed;
 
     #region Essentials
@@ -142,6 +156,24 @@ public class ECSCommandBridge : MonoBehaviour
         SoundManager.Instance.PlayReconstructionSound(); // Play reconstruction sound
         Debug.Log("VOBY reconstruction requested.");
     }
+    [Button("Toggle VOBY Pulsate")]
+    public void RequestVOBYPulsate()
+    {
+        if (ecsWorld == null || !ecsWorld.IsCreated)
+        {
+            Debug.LogError("ECS World is not initialized or not created.");
+            return;
+        }
+        var entity = ecsWorld.EntityManager.CreateEntity(typeof(VOBYPulsateRequest));
+        ecsWorld.EntityManager.SetComponentData(entity, new VOBYPulsateRequest
+        {
+            IsActive = pulsateActive,
+            Strength = pulsateStrength,
+            Duration = pulsateDuration,
+            Center = pulsateCenter != null ? (float3)pulsateCenter.position : float3.zero
+        });
+        Debug.Log($"VOBY Pulsate requested: {(pulsateActive ? "On" : "Off")}, Strength: {pulsateStrength}, Duration: {pulsateDuration}");
+    }
     #region Manetism mode
     private void UpdateMagnetPosition()
     {
@@ -157,41 +189,55 @@ public class ECSCommandBridge : MonoBehaviour
             ConeAngle = math.radians(magnetConeAngle)
         });
     }
-    [Button("Request Magnetic Mode")]
-    public void RequestMagneticMode()
+    [Button("Toggle Magnetic Mode")]
+    public void ToggleMagneticMode()
     {
-        if (currentState == VOBYState.Magnetic) return;
-
-        currentState = VOBYState.Magnetic;
-
         if (ecsWorld == null || !ecsWorld.IsCreated)
         {
             Debug.LogError("ECS World is not initialized or not created.");
             return;
         }
 
-        Debug.Log("Magnetic mode activated.");
-    }
-    [Button("Deactivate Magnetic Field")]
-    public void DeactivateMagneticField()
-    {
-        if (currentState != VOBYState.Magnetic) return;
-
-        currentState = VOBYState.Exploded;
-
-        // Deactivate magnetic field
-        var query = ecsWorld.EntityManager.CreateEntityQuery(typeof(MagneticFieldComponent));
-        var entities = query.ToEntityArray(Unity.Collections.Allocator.Temp);
-
-        foreach (var entity in entities)
+        if (magneticMode)
         {
-            var field = ecsWorld.EntityManager.GetComponentData<MagneticFieldComponent>(entity);
-            field.IsActive = false;
-            ecsWorld.EntityManager.SetComponentData(entity, field);
-        }
+            // Activate magnetic mode
+            currentState = VOBYState.Magnetic;
+            Debug.Log("Magnetic mode activated.");
 
-        entities.Dispose();
-        Debug.Log("Magnetic field deactivated.");
+            // Optionally, send a MagneticRequest to update the field
+            if (magnetTransform != null)
+            {
+                var requestEntity = ecsWorld.EntityManager.CreateEntity(typeof(MagneticRequest));
+                ecsWorld.EntityManager.SetComponentData(requestEntity, new MagneticRequest
+                {
+                    MagnetPosition = magnetTransform.position,
+                    MagnetDirection = magnetTransform.forward,
+                    Radius = magnetRadius,
+                    Force = magnetForce,
+                    ConeAngle = math.radians(magnetConeAngle)
+                });
+            }
+        }
+        else
+        {
+            // Deactivate magnetic mode
+            if (currentState == VOBYState.Magnetic)
+                currentState = VOBYState.Exploded;
+
+            // Deactivate all magnetic fields
+            var query = ecsWorld.EntityManager.CreateEntityQuery(typeof(MagneticFieldComponent));
+            var entities = query.ToEntityArray(Unity.Collections.Allocator.Temp);
+
+            foreach (var entity in entities)
+            {
+                var field = ecsWorld.EntityManager.GetComponentData<MagneticFieldComponent>(entity);
+                field.IsActive = false;
+                ecsWorld.EntityManager.SetComponentData(entity, field);
+            }
+
+            entities.Dispose();
+            Debug.Log("Magnetic field deactivated.");
+        }
     }
     #endregion
 }

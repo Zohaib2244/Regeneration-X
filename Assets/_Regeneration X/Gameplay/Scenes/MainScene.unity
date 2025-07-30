@@ -119,7 +119,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!114 &100884626
+--- !u!114 &208958871
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -134,110 +134,15 @@ MonoBehaviour:
   baseInspectorFoldout: 0
   layoutInfos: []
   buttonMethods:
-  - rid: 4210605559528292597
+  - rid: 7802476022082044207
   references:
     version: 2
     RefIds:
-    - rid: 4210605559528292597
+    - rid: 7802476022082044207
       type: {class: ButtonInfo, ns: AdvancedEditorTools, asm: Assembly-CSharp}
       data:
         methodName: ExtractVOBsTransforms
         buttonName: Extract VOBs Transforms
-        foldout: 1
-        buttonSize: 12
-        parameters: []
---- !u!114 &249767912
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 91035bcb2ca13824395c1c51b162bf3f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  baseInspectorFoldout: 0
-  layoutInfos:
-  - rid: 4210605559528292628
-  - rid: 4210605559528292629
-  - rid: 4210605559528292630
-  - rid: 4210605559528292631
-  - rid: 4210605559528292632
-  buttonMethods:
-  - rid: 4210605559528292633
-  - rid: 4210605559528292634
-  - rid: 4210605559528292635
-  - rid: 4210605559528292636
-  references:
-    version: 2
-    RefIds:
-    - rid: 4210605559528292628
-      type: {class: BeginColumnAreaInfo, ns: AdvancedEditorTools, asm: Assembly-CSharp}
-      data:
-        fieldName: epicenter
-        fieldTypeName: UnityEngine.Transform, UnityEngine.CoreModule, Version=0.0.0.0,
-          Culture=neutral, PublicKeyToken=null
-        windowStyle: 0
-        columnStyle: 1
-    - rid: 4210605559528292629
-      type: {class: NewColumnInfo, ns: AdvancedEditorTools, asm: Assembly-CSharp}
-      data:
-        fieldName: reconstructionPoint
-        fieldTypeName: UnityEngine.Transform, UnityEngine.CoreModule, Version=0.0.0.0,
-          Culture=neutral, PublicKeyToken=null
-    - rid: 4210605559528292630
-      type: {class: EndColumnAreaInfo, ns: AdvancedEditorTools, asm: Assembly-CSharp}
-      data:
-        fieldName: batchSize
-        fieldTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
-          PublicKeyToken=b77a5c561934e089
-        includeLast: 1
-    - rid: 4210605559528292631
-      type: {class: BeginColumnAreaInfo, ns: AdvancedEditorTools, asm: Assembly-CSharp}
-      data:
-        fieldName: magnetTransform
-        fieldTypeName: UnityEngine.Transform, UnityEngine.CoreModule, Version=0.0.0.0,
-          Culture=neutral, PublicKeyToken=null
-        windowStyle: 0
-        columnStyle: 1
-    - rid: 4210605559528292632
-      type: {class: EndColumnAreaInfo, ns: AdvancedEditorTools, asm: Assembly-CSharp}
-      data:
-        fieldName: magnetConeAngle
-        fieldTypeName: System.Single, mscorlib, Version=4.0.0.0, Culture=neutral,
-          PublicKeyToken=b77a5c561934e089
-        includeLast: 1
-    - rid: 4210605559528292633
-      type: {class: ButtonInfo, ns: AdvancedEditorTools, asm: Assembly-CSharp}
-      data:
-        methodName: RequestExplosion
-        buttonName: Request Explosion
-        foldout: 1
-        buttonSize: 12
-        parameters: []
-    - rid: 4210605559528292634
-      type: {class: ButtonInfo, ns: AdvancedEditorTools, asm: Assembly-CSharp}
-      data:
-        methodName: RequestVOBYReconstruction
-        buttonName: Request VOBY Reconstruction
-        foldout: 1
-        buttonSize: 12
-        parameters: []
-    - rid: 4210605559528292635
-      type: {class: ButtonInfo, ns: AdvancedEditorTools, asm: Assembly-CSharp}
-      data:
-        methodName: RequestMagneticMode
-        buttonName: Request Magnetic Mode
-        foldout: 1
-        buttonSize: 12
-        parameters: []
-    - rid: 4210605559528292636
-      type: {class: ButtonInfo, ns: AdvancedEditorTools, asm: Assembly-CSharp}
-      data:
-        methodName: DeactivateMagneticField
-        buttonName: Deactivate Magnetic Field
         foldout: 1
         buttonSize: 12
         parameters: []
@@ -496,10 +401,10 @@ MonoBehaviour:
   dataDict:
     keys:
     - {fileID: 1546860109}
-    - {fileID: 8945438489044045169, guid: c228d32742ad85343ad650cf2045956d, type: 3}
+    - {fileID: 0}
     values:
-    - {fileID: 249767912}
-    - {fileID: 100884626}
+    - {fileID: 1299824332}
+    - {fileID: 208958871}
   extensionEnabled: 1
   debugMode: 0
 --- !u!4 &686139581
@@ -566,6 +471,108 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1299824332
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91035bcb2ca13824395c1c51b162bf3f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  baseInspectorFoldout: 0
+  layoutInfos:
+  - rid: 7802476022082044196
+  - rid: 7802476022082044197
+  - rid: 7802476022082044198
+  - rid: 7802476022082044199
+  - rid: 7802476022082044200
+  - rid: 7802476022082044201
+  buttonMethods:
+  - rid: 7802476022082044202
+  - rid: 7802476022082044203
+  - rid: 7802476022082044204
+  - rid: 7802476022082044205
+  references:
+    version: 2
+    RefIds:
+    - rid: 7802476022082044196
+      type: {class: BeginColumnAreaInfo, ns: AdvancedEditorTools, asm: Assembly-CSharp}
+      data:
+        fieldName: epicenter
+        fieldTypeName: UnityEngine.Transform, UnityEngine.CoreModule, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+        windowStyle: 0
+        columnStyle: 1
+    - rid: 7802476022082044197
+      type: {class: NewColumnInfo, ns: AdvancedEditorTools, asm: Assembly-CSharp}
+      data:
+        fieldName: reconstructionPoint
+        fieldTypeName: UnityEngine.Transform, UnityEngine.CoreModule, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+    - rid: 7802476022082044198
+      type: {class: EndColumnAreaInfo, ns: AdvancedEditorTools, asm: Assembly-CSharp}
+      data:
+        fieldName: batchSize
+        fieldTypeName: System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral,
+          PublicKeyToken=b77a5c561934e089
+        includeLast: 1
+    - rid: 7802476022082044199
+      type: {class: BeginColumnAreaInfo, ns: AdvancedEditorTools, asm: Assembly-CSharp}
+      data:
+        fieldName: magneticMode
+        fieldTypeName: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral,
+          PublicKeyToken=b77a5c561934e089
+        windowStyle: 0
+        columnStyle: 1
+    - rid: 7802476022082044200
+      type: {class: NewColumnInfo, ns: AdvancedEditorTools, asm: Assembly-CSharp}
+      data:
+        fieldName: pulsateActive
+        fieldTypeName: System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral,
+          PublicKeyToken=b77a5c561934e089
+    - rid: 7802476022082044201
+      type: {class: EndColumnAreaInfo, ns: AdvancedEditorTools, asm: Assembly-CSharp}
+      data:
+        fieldName: pulsateCenter
+        fieldTypeName: UnityEngine.Transform, UnityEngine.CoreModule, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+        includeLast: 1
+    - rid: 7802476022082044202
+      type: {class: ButtonInfo, ns: AdvancedEditorTools, asm: Assembly-CSharp}
+      data:
+        methodName: RequestExplosion
+        buttonName: Request Explosion
+        foldout: 1
+        buttonSize: 12
+        parameters: []
+    - rid: 7802476022082044203
+      type: {class: ButtonInfo, ns: AdvancedEditorTools, asm: Assembly-CSharp}
+      data:
+        methodName: RequestVOBYReconstruction
+        buttonName: Request VOBY Reconstruction
+        foldout: 1
+        buttonSize: 12
+        parameters: []
+    - rid: 7802476022082044204
+      type: {class: ButtonInfo, ns: AdvancedEditorTools, asm: Assembly-CSharp}
+      data:
+        methodName: RequestVOBYPulsate
+        buttonName: Toggle VOBY Pulsate
+        foldout: 1
+        buttonSize: 12
+        parameters: []
+    - rid: 7802476022082044205
+      type: {class: ButtonInfo, ns: AdvancedEditorTools, asm: Assembly-CSharp}
+      data:
+        methodName: ToggleMagneticMode
+        buttonName: Toggle Magnetic Mode
+        foldout: 1
+        buttonSize: 12
+        parameters: []
 --- !u!1 &1385099967
 GameObject:
   m_ObjectHideFlags: 0
@@ -767,7 +774,7 @@ Transform:
   m_GameObject: {fileID: 1466348709}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 3.49, z: 0}
+  m_LocalPosition: {x: 0, y: 5.7, z: 0}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -825,17 +832,22 @@ MonoBehaviour:
   slowmoTransitionTime: 0.5
   slowmoTargetTimeScale: 0.5
   reconstructionPoint: {fileID: 375044067}
-  vobyShape: 1
+  vobyShape: 0
   reconstructionType: 0
   freezeUnbatchedVOBs: 0
   randomizeVOBs: 0
   batchDelay: 0.05
   animationDuration: 0.25
-  batchSize: 25
+  batchSize: 50
+  magneticMode: 0
   magnetTransform: {fileID: 1466348713}
   magnetRadius: 10
   magnetForce: 15
   magnetConeAngle: 60
+  pulsateActive: 0
+  pulsateStrength: 2
+  pulsateDuration: 1
+  pulsateCenter: {fileID: 1466348713}
 --- !u!1 &1871746693
 GameObject:
   m_ObjectHideFlags: 0
