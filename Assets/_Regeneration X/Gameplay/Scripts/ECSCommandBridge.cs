@@ -83,6 +83,12 @@ public class ECSCommandBridge : MonoBehaviour
     public Transform pulsateCenter;
 
 
+    [Header("VSCALE Mode")]
+    [BeginColumnArea(columnWidth: 0.45f)]
+    [Tooltip("Enable or disable VSCALE mode.")]
+    [EndColumnArea(includeLast = true)]
+    public bool vscaleEnabled = false; // Flag to enable/disable VSCALE mode
+
     VOBYState currentState = VOBYState.Reconstructed;
 
     #region Essentials
@@ -173,6 +179,21 @@ public class ECSCommandBridge : MonoBehaviour
             Center = pulsateCenter != null ? (float3)pulsateCenter.position : float3.zero
         });
         Debug.Log($"VOBY Pulsate requested: {(pulsateActive ? "On" : "Off")}, Strength: {pulsateStrength}, Duration: {pulsateDuration}");
+    }
+    [Button("Toggle VSCALE Mode")]
+    public void RequestVSCALE()
+    {
+        if (ecsWorld == null || !ecsWorld.IsCreated)
+        {
+            Debug.LogError("ECS World is not initialized or not created.");
+            return;
+        }
+        var entity = ecsWorld.EntityManager.CreateEntity(typeof(VSCALERequest));
+        ecsWorld.EntityManager.SetComponentData(entity, new VSCALERequest
+        {
+            Enable = vscaleEnabled
+        });
+        Debug.Log($"VSCALE mode {(vscaleEnabled ? "enabled" : "disabled")}");
     }
     #region Manetism mode
     private void UpdateMagnetPosition()
