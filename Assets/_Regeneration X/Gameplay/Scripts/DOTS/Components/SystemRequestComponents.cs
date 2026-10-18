@@ -27,6 +27,7 @@ public struct VOBYReconstructionRequest : IComponentData
     public float animationDuration; // Duration of the animation for each VOB
     public ReconstructionType reconstructionType; // Type of reconstruction (default or spiral)
     public float3 epicenter; // Epicenter of the reconstruction
+    public bool useAssignedTargets; // True when VOBComponent targets were already set (formation morph); skips the JSON shape load
 }
 //* VOBReconstructionProcess component
 public struct VOBReconstructionProcess : IComponentData

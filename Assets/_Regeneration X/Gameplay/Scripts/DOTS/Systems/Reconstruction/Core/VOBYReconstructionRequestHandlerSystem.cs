@@ -13,7 +13,7 @@ public partial struct VOBYReconstructionRequestHandlerSystem : ISystem
     {
         state.RequireForUpdate(state.GetEntityQuery(ComponentType.ReadOnly<VOBYReconstructionRequest>()));
     }
-    [BurstCompile]
+    // Not Burst-compiled: UpdateVOBTransformsPerShape reads JSON with managed file IO.
     public void OnUpdate(ref SystemState state)
     {
         // Check if a process is already running
@@ -57,6 +57,9 @@ public partial struct VOBYReconstructionRequestHandlerSystem : ISystem
     {
         // Extract the transforms data from the json
         if (!SystemAPI.TryGetSingleton<VOBYReconstructionRequest>(out var request))
+            return;
+        // Formation morphs have already written each VOB's target; don't overwrite them with the JSON shape.
+        if (request.useAssignedTargets)
             return;
         var JSONSavePath = $"Assets/Resources/{request.VOBYShape}.json";
         if (!File.Exists(JSONSavePath))

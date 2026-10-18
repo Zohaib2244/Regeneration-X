@@ -88,14 +88,24 @@ public partial struct VOBYReconstructionSystem : ISystem
             float3 localPos = currentWorldPos;
             quaternion localRot = currentWorldRot;
 
+            // Target expressed relative to the VOBY, so it stays correct if the VOBY moves mid-flight
+            float3 animTargetPos = vob.Position;
+            quaternion animTargetRot = vob.Rotation;
+            bool targetIsLocal = false;
+
             // Get parent's LocalToWorld to convert world to local
             if (SystemAPI.HasComponent<LocalToWorld>(vob.VOBYParent))
             {
                 var parentLTW = SystemAPI.GetComponentRO<LocalToWorld>(vob.VOBYParent);
                 float4x4 parentInverse = math.inverse(parentLTW.ValueRO.Value);
+                quaternion parentInverseRot = math.inverse(parentLTW.ValueRO.Rotation);
 
                 localPos = math.transform(parentInverse, currentWorldPos);
-                localRot = math.mul(math.inverse(parentLTW.ValueRO.Rotation), currentWorldRot);
+                localRot = math.mul(parentInverseRot, currentWorldRot);
+
+                animTargetPos = math.transform(parentInverse, vob.Position);
+                animTargetRot = math.mul(parentInverseRot, vob.Rotation);
+                targetIsLocal = true;
             }
 
             // Set LocalTransform to the calculated local position
@@ -114,8 +124,9 @@ public partial struct VOBYReconstructionSystem : ISystem
                     {
                         StartPosition = currentWorldPos, // World position
                         StartRotation = currentWorldRot, // World rotation
-                        TargetPosition = vob.Position,   // Target world position
-                        TargetRotation = vob.Rotation,   // Target world rotation
+                        TargetPosition = animTargetPos,
+                        TargetRotation = animTargetRot,
+                        TargetIsLocal = targetIsLocal,
                         AnimationTime = 0f,
                         DelayTime = 0f,
                         AnimationDuration = process.ValueRO.AnimationDuration, // Use the duration from the process
@@ -129,8 +140,9 @@ public partial struct VOBYReconstructionSystem : ISystem
                     {
                         StartPosition = currentWorldPos,
                         StartRotation = currentWorldRot,
-                        TargetPosition = vob.Position,
-                        TargetRotation = vob.Rotation,
+                        TargetPosition = animTargetPos,
+                        TargetRotation = animTargetRot,
+                        TargetIsLocal = targetIsLocal,
                         SpiralCenter = process.ValueRO.Epicenter, // Assuming spiral center is at the target position
                         SpiralRadius = 4f,           // Example radius, adjust as needed
                         SpiralHeight = 6f,           // Example height, adjust as needed
@@ -143,7 +155,12 @@ public partial struct VOBYReconstructionSystem : ISystem
                     });
                     break;
             }
-        // If FreezeUnbatchedVOBs is true, freeze all remaining VOBs
+            ecb.RemoveComponent<VOBExplodedTag>(entity); // Remove exploded tag if exists
+
+            animatedThisFrame++;
+        }
+
+        // (Runs once per batch.) If FreezeUnbatchedVOBs is true, freeze all remaining VOBs
         if (process.ValueRO.FreezeUnbatchedVOBs)
         {
             for (int j = 0; j < vobEntities.Length; j++)
@@ -159,10 +176,6 @@ public partial struct VOBYReconstructionSystem : ISystem
                 ecb.RemoveComponent<PhysicsMass>(_entity);
                 ecb.RemoveComponent<PhysicsGravityFactor>(_entity);
             }
-        }
-            ecb.RemoveComponent<VOBExplodedTag>(entity); // Remove exploded tag if exists
-
-            animatedThisFrame++;
         }
 
 

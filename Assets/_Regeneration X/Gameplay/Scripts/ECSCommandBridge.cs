@@ -89,6 +89,24 @@ public class ECSCommandBridge : MonoBehaviour
     [EndColumnArea(includeLast = true)]
     public bool vscaleEnabled = false; // Flag to enable/disable VSCALE mode
 
+
+    [Header("Formations & Cube Mass")]
+    [Tooltip("Shape used by Morph, and by reconstruction after an explosion. Leave empty to rebuild the old JSON shape.")]
+    public VOBFormation targetFormation;
+    [Tooltip("In Play mode, number keys 1-9 morph the player into these.")]
+    public VOBFormation[] hotkeyFormations = new VOBFormation[0];
+    [Tooltip("Optional: the player VOBY follows this transform (drive it with any character controller).")]
+    public Transform playerAnchor;
+    [Tooltip("Cubes knocked off by the X key / Drop Test Cubes button.")]
+    public int detachTestCount = 50;
+    public float detachForce = 6f;
+    [Tooltip("Seconds before knocked-off cubes can be collected again.")]
+    public float detachPickupDelay = 1.5f;
+    public bool showDebugHUD = true;
+
+    Entity controlledVOBY = Entity.Null;
+    string lastMessage;
+
     VOBYState currentState = VOBYState.Reconstructed;
 
     #region Essentials
@@ -99,6 +117,8 @@ public class ECSCommandBridge : MonoBehaviour
     }
     private void Update()
     {
+        HandleFormationHotkeys();
+
         // Sync magnet position with DOTS system when in magnetic mode
         if (currentState == VOBYState.Magnetic && magnetTransform != null)
         {
@@ -140,6 +160,12 @@ public class ECSCommandBridge : MonoBehaviour
     public void RequestVOBYReconstruction()
     {
         if (currentState != VOBYState.Exploded) return;
+        if (targetFormation != null)
+        {
+            // Rebuild into the chosen formation instead of the JSON shape.
+            MorphTo(targetFormation);
+            return;
+        }
         currentState = VOBYState.Reconstructed;
         if (ecsWorld == null || !ecsWorld.IsCreated)
         {
@@ -259,6 +285,173 @@ public class ECSCommandBridge : MonoBehaviour
             entities.Dispose();
             Debug.Log("Magnetic field deactivated.");
         }
+    }
+    #endregion
+
+    #region Formations & cube mass
+    [Button("Morph To Target Formation")]
+    public void RequestMorph() => MorphTo(targetFormation);
+
+    /// <summary>Morphs the player (or the only VOBY) into <paramref name="formation"/> if it owns enough cubes.</summary>
+    public MorphResult MorphTo(VOBFormation formation)
+    {
+        if (!WorldReady()) return MorphResult.Invalid;
+        if (formation == null)
+        {
+            Debug.LogWarning("No formation assigned.");
+            return MorphResult.Invalid;
+        }
+        if (currentState == VOBYState.Magnetic)
+        {
+            lastMessage = "Turn off magnetic mode before morphing.";
+            Debug.LogWarning(lastMessage);
+            return MorphResult.Busy;
+        }
+
+        var em = ecsWorld.EntityManager;
+        Entity owner = GetControlledVOBY();
+        MorphResult result = FormationMorphUtility.PrepareMorph(em, owner, formation, out int missing);
+        switch (result)
+        {
+            case MorphResult.NotEnoughCubes:
+                lastMessage = $"Need {missing} more cubes for {formation.name} (costs {formation.Cost}).";
+                Debug.Log(lastMessage);
+                return result;
+            case MorphResult.Busy:
+                lastMessage = "Still finishing the last morph.";
+                return result;
+            case MorphResult.Invalid:
+                lastMessage = "No VOBY to morph.";
+                return result;
+        }
+
+        float3 center = em.HasComponent<Unity.Transforms.LocalToWorld>(owner)
+            ? em.GetComponentData<Unity.Transforms.LocalToWorld>(owner).Position
+            : float3.zero;
+
+        var requestEntity = em.CreateEntity(typeof(VOBYReconstructionRequest));
+        em.SetComponentData(requestEntity, new VOBYReconstructionRequest
+        {
+            reconstructionPoint = reconstructionPoint != null ? (float3)reconstructionPoint.position : center,
+            VOBYShape = vobyShape,
+            randomizeVOBs = randomizeVOBs,
+            freezeUnbatchedVOBs = freezeUnbatchedVOBs,
+            batchSize = batchSize,
+            batchDelay = batchDelay,
+            animationDuration = animationDuration,
+            reconstructionType = reconstructionType,
+            epicenter = center, // spiral around the shape itself
+            useAssignedTargets = true
+        });
+
+        currentState = VOBYState.Reconstructed;
+        lastMessage = $"Morphing into {formation.name}.";
+        if (SoundManager.Instance != null) SoundManager.Instance.PlayReconstructionSound();
+        return result;
+    }
+
+    /// <summary>Cubes the player owns right now.</summary>
+    public int PlayerCubeCount => WorldReady() ? FormationMorphUtility.GetCubeCount(ecsWorld.EntityManager, GetControlledVOBY()) : 0;
+
+    public bool CanMorphInto(VOBFormation formation, out int missing)
+    {
+        int have = PlayerCubeCount;
+        missing = formation != null ? Mathf.Max(0, formation.Cost - have) : 0;
+        return formation != null && missing == 0;
+    }
+
+    /// <summary>
+    /// Knocks cubes off the player at <paramref name="hitPoint"/>; they become loose pickups.
+    /// Hook damage into this: DetachCubes(damageInCubes, hit.point, knockback).
+    /// </summary>
+    public int DetachCubes(int count, Vector3 hitPoint, float force)
+    {
+        if (!WorldReady()) return 0;
+        int n = FormationMorphUtility.DetachVOBs(ecsWorld.EntityManager, GetControlledVOBY(), count, hitPoint, force, detachPickupDelay);
+        lastMessage = $"Lost {n} cubes.";
+        return n;
+    }
+
+    [Button("Drop Test Cubes")]
+    public void DetachTestCubes()
+    {
+        if (!WorldReady()) return;
+        var em = ecsWorld.EntityManager;
+        Entity owner = GetControlledVOBY();
+        if (owner == Entity.Null) return;
+        float3 center = em.GetComponentData<Unity.Transforms.LocalToWorld>(owner).Position;
+        // Hit from a random side so different parts get chipped off.
+        Vector3 side = UnityEngine.Random.onUnitSphere;
+        side.y = Mathf.Abs(side.y) * 0.5f;
+        DetachCubes(detachTestCount, (Vector3)center + side.normalized * 5f, detachForce);
+    }
+
+    [Button("Toggle Collecting")]
+    public void ToggleCollecting()
+    {
+        if (!WorldReady()) return;
+        var em = ecsWorld.EntityManager;
+        Entity owner = GetControlledVOBY();
+        if (owner == Entity.Null || !em.HasComponent<VOBCollector>(owner))
+        {
+            lastMessage = "The controlled VOBY has no collector. Tick 'Is Player' on its VOBYAuthoring.";
+            Debug.LogWarning(lastMessage);
+            return;
+        }
+        var collector = em.GetComponentData<VOBCollector>(owner);
+        collector.Enabled = !collector.Enabled;
+        em.SetComponentData(owner, collector);
+        lastMessage = $"Collecting {(collector.Enabled ? "on" : "off")}.";
+    }
+
+    void HandleFormationHotkeys()
+    {
+        for (int i = 0; i < hotkeyFormations.Length && i < 9; i++)
+            if (Input.GetKeyDown(KeyCode.Alpha1 + i) && hotkeyFormations[i] != null)
+                MorphTo(hotkeyFormations[i]);
+        if (Input.GetKeyDown(KeyCode.X)) DetachTestCubes();
+        if (Input.GetKeyDown(KeyCode.C)) ToggleCollecting();
+    }
+
+    void LateUpdate()
+    {
+        if (playerAnchor == null || !WorldReady()) return;
+        var em = ecsWorld.EntityManager;
+        Entity owner = GetControlledVOBY();
+        if (owner == Entity.Null || !em.HasComponent<Unity.Transforms.LocalTransform>(owner)) return;
+        var t = em.GetComponentData<Unity.Transforms.LocalTransform>(owner);
+        t.Position = playerAnchor.position;
+        t.Rotation = playerAnchor.rotation;
+        em.SetComponentData(owner, t);
+    }
+
+    Entity GetControlledVOBY()
+    {
+        var em = ecsWorld.EntityManager;
+        if (controlledVOBY == Entity.Null || !em.Exists(controlledVOBY))
+            controlledVOBY = FormationMorphUtility.FindControlledVOBY(em);
+        return controlledVOBY;
+    }
+
+    bool WorldReady() => ecsWorld != null && ecsWorld.IsCreated;
+
+    void OnGUI()
+    {
+        if (!showDebugHUD || !Application.isPlaying || !WorldReady()) return;
+        int have = PlayerCubeCount;
+
+        GUILayout.BeginArea(new Rect(12, 12, 340, 400), GUI.skin.box);
+        GUILayout.Label($"<b>Cubes: {have}</b>", new GUIStyle(GUI.skin.label) { richText = true, fontSize = 16 });
+        for (int i = 0; i < hotkeyFormations.Length && i < 9; i++)
+        {
+            var f = hotkeyFormations[i];
+            if (f == null) continue;
+            string need = have >= f.Cost ? "ready" : $"need {f.Cost - have} more";
+            GUILayout.Label($"[{i + 1}] {f.name} - {f.Cost} cubes ({need})");
+        }
+        GUILayout.Label("X: knock off cubes   C: collecting on/off");
+        if (!string.IsNullOrEmpty(lastMessage)) GUILayout.Label(lastMessage);
+        GUILayout.EndArea();
     }
     #endregion
 }

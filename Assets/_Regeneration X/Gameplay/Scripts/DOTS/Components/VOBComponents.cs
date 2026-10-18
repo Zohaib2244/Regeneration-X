@@ -19,6 +19,9 @@ public struct VOBDefaultReconstructionAnimation : IComponentData
     public float DelayTime;
     public float AnimationDuration;
     public int AnimationIndex;
+    // When true, TargetPosition/TargetRotation are in the parent VOBY's local space, so the cube
+    // still lands in the right spot if the VOBY moves while it is flying (needed for a moving player).
+    public bool TargetIsLocal;
 }
 [System.Serializable]
 public struct VOBSpiralReconstructionAnimation : IComponentData
@@ -36,4 +39,5 @@ public struct VOBSpiralReconstructionAnimation : IComponentData
     public float SpiralDuration;     // Time spent in spiral phase
     public float MoveDuration;       // Time spent moving to target
     public int AnimationIndex;
+    public bool TargetIsLocal;       // Same meaning as on VOBDefaultReconstructionAnimation
 }

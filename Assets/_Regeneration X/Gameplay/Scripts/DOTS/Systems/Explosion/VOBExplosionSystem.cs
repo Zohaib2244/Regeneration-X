@@ -43,6 +43,7 @@ public partial struct VOBExplosionSystem : ISystem
     }
 
     [BurstCompile]
+    [WithNone(typeof(VOBLoose))] // loose pickups in the world aren't part of anyone's body
     public partial struct VOBExplosionJob : IJobEntity
     {
         public EntityCommandBuffer.ParallelWriter ECB;

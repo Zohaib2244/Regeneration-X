@@ -26,9 +26,23 @@ public partial struct VOBReconstructionAnimationSystem : ISystem
 
             float t = math.saturate((anim.ValueRW.AnimationTime - anim.ValueRO.DelayTime) / anim.ValueRO.AnimationDuration);
 
+            // Resolve the target in world space (it may be stored relative to the parent VOBY)
+            float3 targetPos = anim.ValueRO.TargetPosition;
+            quaternion targetRot = anim.ValueRO.TargetRotation;
+            if (anim.ValueRO.TargetIsLocal && SystemAPI.HasComponent<Parent>(entity))
+            {
+                Entity owner = SystemAPI.GetComponentRO<Parent>(entity).ValueRO.Value;
+                if (owner != Entity.Null && SystemAPI.HasComponent<LocalToWorld>(owner))
+                {
+                    var ownerLTW = SystemAPI.GetComponentRO<LocalToWorld>(owner).ValueRO;
+                    targetPos = math.transform(ownerLTW.Value, targetPos);
+                    targetRot = math.mul(ownerLTW.Rotation, targetRot);
+                }
+            }
+
             // Interpolate in world space
-            float3 worldPos = math.lerp(anim.ValueRO.StartPosition, anim.ValueRO.TargetPosition, t);
-            quaternion worldRot = math.slerp(anim.ValueRO.StartRotation, anim.ValueRO.TargetRotation, t);
+            float3 worldPos = math.lerp(anim.ValueRO.StartPosition, targetPos, t);
+            quaternion worldRot = math.slerp(anim.ValueRO.StartRotation, targetRot, t);
 
             // Apply to transform
             if (SystemAPI.HasComponent<LocalTransform>(entity))

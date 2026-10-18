@@ -26,6 +26,20 @@ public partial struct VOBSpiralReconstructionAnimationSystem : ISystem
             float elapsed = anim.ValueRW.AnimationTime - anim.ValueRO.DelayTime;
             float totalDuration = anim.ValueRO.SpiralDuration + anim.ValueRO.MoveDuration;
 
+            // Resolve the target in world space (it may be stored relative to the parent VOBY)
+            float3 targetPos = anim.ValueRO.TargetPosition;
+            quaternion targetRot = anim.ValueRO.TargetRotation;
+            if (anim.ValueRO.TargetIsLocal && SystemAPI.HasComponent<Parent>(entity))
+            {
+                Entity owner = SystemAPI.GetComponentRO<Parent>(entity).ValueRO.Value;
+                if (owner != Entity.Null && SystemAPI.HasComponent<LocalToWorld>(owner))
+                {
+                    var ownerLTW = SystemAPI.GetComponentRO<LocalToWorld>(owner).ValueRO;
+                    targetPos = math.transform(ownerLTW.Value, targetPos);
+                    targetRot = math.mul(ownerLTW.Rotation, targetRot);
+                }
+            }
+
             float3 worldPos;
             quaternion worldRot;
 
@@ -68,8 +82,8 @@ public partial struct VOBSpiralReconstructionAnimationSystem : ISystem
                 float3 finalSpiralPos = anim.ValueRO.SpiralCenter + finalSpiralOffset;
                 
                 // Move from final spiral position to target
-                worldPos = math.lerp(finalSpiralPos, anim.ValueRO.TargetPosition, moveT);
-                worldRot = math.slerp(anim.ValueRO.StartRotation, anim.ValueRO.TargetRotation, moveT);
+                worldPos = math.lerp(finalSpiralPos, targetPos, moveT);
+                worldRot = math.slerp(anim.ValueRO.StartRotation, targetRot, moveT);
             }
 
             // Apply to transform - ALWAYS work in world space first, then convert to local
