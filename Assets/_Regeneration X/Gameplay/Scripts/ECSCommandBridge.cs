@@ -103,6 +103,8 @@ public class ECSCommandBridge : MonoBehaviour
     [Tooltip("Seconds before knocked-off cubes can be collected again.")]
     public float detachPickupDelay = 1.5f;
     public bool showDebugHUD = true;
+    [Tooltip("Number keys 1-9 morph into Hotkey Formations. PlayerController turns this off and uses its own forms.")]
+    public bool enableNumberHotkeys = true;
 
     Entity controlledVOBY = Entity.Null;
     string lastMessage;
@@ -406,9 +408,10 @@ public class ECSCommandBridge : MonoBehaviour
 
     void HandleFormationHotkeys()
     {
-        for (int i = 0; i < hotkeyFormations.Length && i < 9; i++)
-            if (Input.GetKeyDown(KeyCode.Alpha1 + i) && hotkeyFormations[i] != null)
-                MorphTo(hotkeyFormations[i]);
+        if (enableNumberHotkeys)
+            for (int i = 0; i < hotkeyFormations.Length && i < 9; i++)
+                if (Input.GetKeyDown(KeyCode.Alpha1 + i) && hotkeyFormations[i] != null)
+                    MorphTo(hotkeyFormations[i]);
         if (Input.GetKeyDown(KeyCode.X)) DetachTestCubes();
         if (Input.GetKeyDown(KeyCode.C)) ToggleCollecting();
     }

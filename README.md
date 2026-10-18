@@ -78,3 +78,13 @@ On `ECSCommandBridge`, assign **Target Formation** and press **Morph To Target F
 - `ECSCommandBridge.DetachCubes(count, hitPoint, force)` knocks off the cubes nearest the hit as loose pickups; this is the hook for damage. Test with **X** (knock off) and **C** (collecting on/off).
 - `PlayerCubeCount` and `CanMorphInto(formation, out missing)` are there for UI.
 - **Player Anchor** makes the player VOBY follow any transform, so any character controller can drive it.
+
+---
+
+## 🎮 Player: controller, camera & forms
+
+1. Bake some shapes (**NuttyTools → VOB Formation Baker**), select them in the Project window, then **NuttyTools → Create Forms From Selected Formations**. Each becomes a `PlayerFormDefinition` (shape + how it moves; spheres default to a rolling feel).
+2. **NuttyTools → Setup Player Rig** adds the Player (CharacterController + `PlayerController`), a `TopDownCamera`, marks the VOBY as the player and fills in the forms list.
+3. Press Play: **WASD / left stick** move, **Space** dodge, **1-9** or **Q / E** morph, **R** back to the starting form, **X** knock cubes off, **C** collecting on/off.
+
+Morphing is refused (with a message) when you don't own enough cubes for the form. The camera pulls back as the shape gets bigger. `PlayerController.AimDirection` (mouse / right stick) is ready for weapons.
